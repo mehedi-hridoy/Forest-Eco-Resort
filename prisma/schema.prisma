@@ -99,6 +99,12 @@ model Media {
   status String @default("Draft")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  file MediaFile?
+}
+model MediaFile {
+  mediaId String @id
+  media Media @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  data Bytes
 }
 model Notification {
   id String @id @default(cuid())

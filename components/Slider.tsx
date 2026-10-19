@@ -2,8 +2,7 @@
 import {useEffect,useRef,useState,useCallback} from 'react';
 import {ArrowDown,ChevronLeft,ChevronRight} from 'lucide-react';
 import type {Entry} from '@/lib/content';
-const ALLOWED_REMOTE=/^https:\/\/([a-z0-9-]+\.)*(utfs\.io|uploadthing\.com|ufs\.sh)\//i;
-const isValidMedia=(u:unknown)=>typeof u==='string'&&(u.startsWith('/')&&!u.startsWith('//')||ALLOWED_REMOTE.test(u));
+import {isMediaUrl as isValidMedia} from '@/lib/validation';
 export default function Slider({slides}:{slides:Entry[]}){
  const [index,setIndex]=useState(0);const [paused,setPaused]=useState(false);
  const count=slides.length;

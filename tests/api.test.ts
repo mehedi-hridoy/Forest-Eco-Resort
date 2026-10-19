@@ -5,7 +5,8 @@ import bcrypt from 'bcryptjs';
 import {randomUUID} from 'node:crypto';
 import app from '../server/app';
 import {db} from '../server/db';
-const origin=process.env.APP_ORIGIN||'http://127.0.0.1:3000';
+const origin='http://qa.forest.test';
+process.env.APP_ORIGIN=origin;
 const tag=randomUUID().slice(0,8),password=randomUUID()+'A!',users:any={},tokens:any={};let leadId='',mediaId='',contentId='';
 const submit=()=>({submissionKey:randomUUID(),fullName:'QA Integration Test',mobile:'+8801800000000',email:`qa-${tag}@example.invalid`,interest:'Villa Ownership',villa:'Private Villa',purpose:'Personal Use',contactMethod:'Email',contactTime:'Morning',message:'Temporary test record',source:'/tests',consent:true});
 function call(role:string,method:string,url:string,body?:any){const req=(request(app) as any)[method](url).set('Origin',origin).set('Cookie',tokens[role]?.cookie||'').set('x-csrf-token',tokens[role]?.csrf||'');return body===undefined?req:req.send(body)}

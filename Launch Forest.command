@@ -8,4 +8,4 @@ if [[ ! -d node_modules ]]; then print 'Run pnpm install, database setup and pnp
 print 'Forest Eco Resort: http://127.0.0.1:3000'
 print 'Administration: http://127.0.0.1:3000/admin'
 print 'Keep this window open. Press Control-C to stop.'
-node node_modules/concurrently/dist/bin/concurrently.js -k 'node dist-server/server/index.js' 'node node_modules/next/dist/bin/next start --hostname 127.0.0.1'
+node node_modules/next/dist/bin/next start --hostname 127.0.0.1

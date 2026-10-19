@@ -11,4 +11,6 @@ export const leadSchema = z.object({
  consent:z.literal(true),source:text(300),campaign:text(500).optional(),website:z.string().max(0).optional()
 });
 export const contentSchema=z.object({kind:z.enum(kinds),slug:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120),title:text(250).pipe(z.string().min(1)),status:z.enum(['Draft','In Review','Scheduled','Published','Archived']),sortOrder:z.number().int().min(0).max(9999),data:z.record(z.unknown()),publishAt:z.string().datetime().nullable().optional(),approved:z.boolean().optional()});
+export const REMOTE_MEDIA=/^https:\/\/([a-z0-9-]+\.)*public\.blob\.vercel-storage\.com\//i;
+export function isMediaUrl(v:unknown):v is string{return typeof v==='string'&&((v.startsWith('/')&&!v.startsWith('//'))||REMOTE_MEDIA.test(v));}
 export function safeUrl(v:unknown) { return typeof v==='string' && (/^\/(?!\/)/.test(v)||/^https:\/\//.test(v)||/^(tel:|mailto:)/.test(v)) ? v : '#'; }

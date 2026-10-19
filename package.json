@@ -2,19 +2,20 @@
   "name": "forest-eco-resort",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
-    "dev": "concurrently -k \"tsx watch server/index.ts\" \"next dev --hostname 0.0.0.0\"",
-    "build": "prisma generate && next build && tsc -p tsconfig.server.json",
-    "start": "concurrently -k \"node dist-server/server/index.js\" \"next start --hostname 0.0.0.0\"",
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "prisma generate && next build",
+    "start": "next start --hostname 0.0.0.0",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "admin:create": "tsx scripts/create-admin.ts",
     "test": "tsx --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",
-    "@uploadthing/react": "^7.3.3",
+    "@vercel/blob": "^2.8.2",
     "bcryptjs": "3.0.2",
     "cookie-parser": "1.4.7",
     "dotenv": "17.2.3",
@@ -30,7 +31,6 @@
     "react": "19.1.4",
     "react-dom": "19.1.4",
     "sharp": "^0.35.5",
-    "uploadthing": "^7.7.4",
     "zod": "3.25.76"
   },
   "devDependencies": {
@@ -43,7 +43,6 @@
     "@types/react": "19.1.17",
     "@types/react-dom": "19.1.11",
     "@types/supertest": "6.0.3",
-    "concurrently": "9.2.1",
     "prisma": "6.19.0",
     "supertest": "7.1.4",
     "tsx": "4.20.6",
