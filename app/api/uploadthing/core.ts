@@ -1,6 +1,5 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { cookies } from 'next/headers';
-import { createHash } from 'node:crypto';
 
 const f = createUploadthing();
 
@@ -24,20 +23,19 @@ async function verifySession(): Promise<boolean> {
   }
 }
 
+const authMiddleware = async () => {
+  const ok = await verifySession();
+  if (!ok) throw new Error('Unauthorized');
+  return {};
+};
+
 export const ourFileRouter = {
-  // Used from the Media tab in the admin panel
-  imageUploader: f({
-    image: { maxFileSize: '8MB', maxFileCount: 1 },
-  })
-    .middleware(async () => {
-      const ok = await verifySession();
-      if (!ok) throw new Error('Unauthorized');
-      return {};
-    })
-    .onUploadComplete(async ({ file }) => {
-      // Return the URL back to the client
-      return { url: file.ufsUrl || file.url, name: file.name };
-    }),
+  imageUploader: f({ image: { maxFileSize: '8MB', maxFileCount: 1 } })
+    .middleware(authMiddleware)
+    .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl || file.url, name: file.name })),
+  videoUploader: f({ video: { maxFileSize: '64MB', maxFileCount: 1 } })
+    .middleware(authMiddleware)
+    .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl || file.url, name: file.name })),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

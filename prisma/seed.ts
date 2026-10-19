@@ -4,7 +4,7 @@ import phases from './phases.json';
 const db=new PrismaClient();
 const records:any[]=[...phases];
 const add=(kind:string,slug:string,title:string,data:any,sortOrder=0,status='Published')=>records.push({kind,slug,title,data,sortOrder,status});
-const nav=[['home','Home','/'],['estate','The Estate','/estate'],['experience','The Experience','/experience'],['villas','Villas & Ownership','/villas-ownership'],['nature','In Harmony with Nature','/sustainability'],['masterplan','The Masterplan','/masterplan'],['discover','Discover Forest','/discover-forest'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
+const nav=[['home','Home','/'],['estate','The Estate','/estate'],['experience','The Experience','/experience'],['villas','Villas & Ownership','/villas-ownership'],['nature','In Harmony with Nature','/sustainability'],['masterplan','The Masterplan','/masterplan'],['discover','Discover Forest','/discover-forest'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
 nav.forEach(([slug,title,url],i)=>add('navigation',slug,title,{url},i));
 const pages=[
  ['home','Where Nature Becomes an Experience.','A premium destination where nature, luxury, hospitality, adventure and leisure come together in one extraordinary setting.','/images/forest.jpg'],

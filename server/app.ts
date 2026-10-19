@@ -17,14 +17,16 @@ const app=express();
 app.disable('x-powered-by');
 app.use(helmet());app.use(express.json({limit:'512kb'}));app.use(cookieParser());
 app.use('/api',(_req,res,next)=>{res.setHeader('Cache-Control','no-store');next();});
-const origin=()=>process.env.APP_ORIGIN||'http://127.0.0.1:3000';
+const originsSet=new Set((process.env.APP_ORIGIN||'http://127.0.0.1:3000').split(',').map(s=>s.trim()).filter(Boolean));
+const origin=()=>originsSet.values().next().value||'http://127.0.0.1:3000';
+const isAllowedOrigin=(o:string|undefined)=>!!o&&originsSet.has(o);
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 const audit=async(actorId:string|undefined,action:string,resourceId?:string,detail='')=>{await db.auditLog.create({data:{actorId,action,resourceId,detail}});};
 function fail(res:Response,status:number,message:string){return res.status(status).json({error:{message}});}
 app.use('/api/v1',async(req,res,next)=>{
  if(req.cookies.forest_session){const sess=await db.session.findUnique({where:{id:hash(req.cookies.forest_session)},include:{user:true}});if(sess&&sess.expiresAt>new Date()&&sess.user.active){req.user=sess.user;req.sessionId=sess.id;}}
  if(!['GET','HEAD','OPTIONS'].includes(req.method)){
-  if(req.headers.origin!==origin())return fail(res,403,'Unrecognized request origin.');
+  if(!isAllowedOrigin(req.headers.origin))return fail(res,403,'Unrecognized request origin.');
   if(req.user){const sess=await db.session.findUnique({where:{id:req.sessionId}});if(!sess||req.headers['x-csrf-token']!==sess.csrf)return fail(res,403,'Session verification failed. Reload and try again.');}
  }
  next();
