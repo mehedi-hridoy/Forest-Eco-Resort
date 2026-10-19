@@ -4,7 +4,7 @@ import {usePathname} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
 import {Menu,X,ArrowUpRight,ArrowUp,Leaf,Facebook,Instagram} from 'lucide-react';
 import {safeUrl} from '@/lib/validation';
-const NAV_TITLES=['The Estate','The Experience','Villas & Ownership','The Masterplan','Shareholder Benefits','Gallery'];
+const NAV_TITLES=['Discover Forest','Villas & Ownership','The Masterplan','Shareholder Benefits','Gallery'];
 const WHATSAPP_NUMBER='8801897660045';
 export function Logo(){return <span className="brand"><Leaf size={33} strokeWidth={1}/><span>FOREST<small>ECO RESORT</small></span></span>}
 export function Navigation({links}:{links:{title:string;url:string}[]}){
