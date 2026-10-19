@@ -44,7 +44,7 @@ export default function BrochureButton({villa,title,available,variant='dark'}:{v
      <h3>{available?<>Your brochure,<br/><em>one step away.</em></>:<>Request the<br/><em>brochure.</em></>}</h3>
      <p className="brochure-note">{available?'Share your name and mobile number and the brochure will download instantly.':'The brochure for this villa is being finalised. Leave your details and our team will send it to you.'}</p>
      <label>Your name<input ref={firstField} name="name" required minLength={2} maxLength={120} autoComplete="name" placeholder="Full name"/></label>
-     <label>Mobile number<input name="mobile" required inputMode="tel" autoComplete="tel" pattern="\+?[\d\s()\-]{8,20}" placeholder="01XXXXXXXXX"/></label>
+     <label>Mobile number<input name="mobile" required inputMode="tel" autoComplete="tel" pattern="\+?[\d\s\(\)\-]{8,20}" placeholder="01XXXXXXXXX"/></label>
      {error&&<p className="brochure-error" role="alert">{error}</p>}
      <button className="brochure-submit" disabled={busy}>{busy?'Please wait…':available?<><Download size={16}/> Download brochure</>:'Send me the brochure'}</button>
      <small>By continuing you agree that our team may contact you about Forest Eco Resort.</small>

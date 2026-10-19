@@ -33,11 +33,14 @@ const MAX_DB_FILE=4*1024*1024;
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 const audit=async(actorId:string|undefined,action:string,resourceId?:string,detail='')=>{await db.auditLog.create({data:{actorId,action,resourceId,detail}});};
 function fail(res:Response,status:number,message:string){return res.status(status).json({error:{message}});}
+// Anonymous endpoints never act as the signed-in user, so an admin who is logged in while using the
+// public site must not be asked for the dashboard CSRF token. The origin check above still applies.
+const PUBLIC_POSTS=new Set(['/leads','/brochure-requests','/events','/auth/login','/auth/forgot-password','/auth/reset-password']);
 app.use('/api/v1',async(req,res,next)=>{
  if(req.cookies.forest_session){const sess=await db.session.findUnique({where:{id:hash(req.cookies.forest_session)},include:{user:true}});if(sess&&sess.expiresAt>new Date()&&sess.user.active){req.user=sess.user;req.sessionId=sess.id;}}
  if(!['GET','HEAD','OPTIONS'].includes(req.method)){
   if(!isAllowedOrigin(req))return fail(res,403,'Unrecognized request origin.');
-  if(req.user){const sess=await db.session.findUnique({where:{id:req.sessionId}});if(!sess||req.headers['x-csrf-token']!==sess.csrf)return fail(res,403,'Session verification failed. Reload and try again.');}
+  if(req.user&&!PUBLIC_POSTS.has(req.path)){const sess=await db.session.findUnique({where:{id:req.sessionId}});if(!sess||req.headers['x-csrf-token']!==sess.csrf)return fail(res,403,'Session verification failed. Reload and try again.');}
  }
  next();
 });
@@ -100,11 +103,12 @@ app.post('/api/v1/brochure-requests',rateLimit({windowMs:3600000,limit:20,standa
  const villa=await db.content.findFirst({where:{kind:'villas',slug:input.villa,OR:[{status:'Published'},{status:'Scheduled',publishAt:{lte:new Date()}}]}});
  if(!villa)return fail(res,404,'This villa is not available.');
  const brochureUrl=brochureFor(villa.slug,villa.data);
+ const villaName=villa.title.replace(/^The /,'');
  const note=`Brochure requested for ${villa.title}.${brochureUrl?'':' No brochure is uploaded yet; please send it manually.'}`;
- const recent=await db.lead.findFirst({where:{mobile:input.mobile,villa:villa.title,createdAt:{gte:new Date(Date.now()-3600000)}}});
+ const recent=await db.lead.findFirst({where:{mobile:input.mobile,villa:villaName,createdAt:{gte:new Date(Date.now()-3600000)}}});
  if(!recent){
   await db.$transaction(async tx=>{
-   const l=await tx.lead.create({data:{submissionKey:randomUUID(),fullName:input.name,mobile:input.mobile,email:'',interest:'Villa Ownership',villa:villa.title,contactMethod:'Phone',message:note,source:input.source?.slice(0,300)||'/villas-ownership',consentAt:new Date(),activities:{create:{kind:'Brochure',text:note}}}});
+   const l=await tx.lead.create({data:{submissionKey:randomUUID(),fullName:input.name,mobile:input.mobile,email:'',interest:'Villa Ownership',villa:villaName,contactMethod:'Phone',message:note,source:input.source?.slice(0,300)||'/villas-ownership',consentAt:new Date(),activities:{create:{kind:'Brochure',text:note}}}});
    await tx.notification.create({data:{leadId:l.id,recipient:process.env.SALES_NOTIFICATION_EMAIL||'',subject:`Brochure request: ${villa.title}`,body:`${input.name} (${input.mobile}) requested the ${villa.title} brochure. Details: ${origin()}/admin`,status:process.env.SMTP_HOST&&process.env.SALES_NOTIFICATION_EMAIL?'Pending':'Unconfigured'}});
   });
   try{await processNotifications();}catch{console.error('Notification delivery failed; it will be retried.');}
@@ -120,7 +124,7 @@ app.get('/api/v1/admin/leads',leadRead,async(req,res)=>{const {page,limit}=pagin
 app.get('/api/v1/admin/leads/export',permit('Sales Manager'),async(req,res)=>{
  const leads=await db.lead.findMany({where:leadWhere(req),include:{assignee:{select:{name:true}}},orderBy:{createdAt:'desc'},take:10000});
  const cols:[string,string,number][]=[['Received','createdAt',20],['Name','fullName',24],['Mobile','mobile',18],['Email','email',30],['Interest','interest',18],['Villa','villa',16],['Purpose','purpose',14],['Contact method','contactMethod',15],['Contact time','contactTime',14],['Status','status',20],['Priority','priority',10],['Assigned to','assignee',18],['Message','message',50],['Source','source',22],['Campaign','campaign',22],['Reference','id',28]];
- const value=(l:any,k:string)=>k==='assignee'?l.assignee?.name??'':k==='createdAt'?new Date(l.createdAt).toISOString().replace('T',' ').slice(0,16):l[k]??'';
+ const value=(l:any,k:string)=>k==='assignee'?l.assignee?.name??'':k==='createdAt'?new Date(l.createdAt).toLocaleString('sv-SE',{timeZone:'Asia/Dhaka'}).slice(0,16):l[k]??'';
  const format=req.query.format==='xlsx'?'xlsx':'csv',stamp=new Date().toISOString().slice(0,10);
  await audit(req.user!.id,'leads.export',undefined,`${leads.length} records (${format})`);
  if(format==='xlsx'){

@@ -7,6 +7,7 @@ import {uid} from '@/lib/uid';
 const INTERESTS=['Villa Ownership','Investment','Resort Stay','Project Information'];
 const VILLAS=['Private Villa','Duplex Villa','Single Villa'];
 const MAX_MESSAGE=4000;
+const campaign=()=>{const q=new URLSearchParams(location.search),utm=['utm_source','utm_medium','utm_campaign'].map(k=>q.get(k)||'');return utm.some(Boolean)?utm.join(' / '):'';};
 
 export default function InquiryForm({defaultInterest='Project Information'}:{defaultInterest?:string}){
  const [interest,setInterest]=useState(defaultInterest),[villa,setVilla]=useState(VILLAS[0]),[messageLength,setMessageLength]=useState(0);
@@ -16,7 +17,7 @@ export default function InquiryForm({defaultInterest='Project Information'}:{def
  async function submit(e:React.FormEvent<HTMLFormElement>){
   e.preventDefault();if(busy)return;setFailure('');
   const values=Object.fromEntries(new FormData(e.currentTarget));
-  const data={...values,consent:values.consent==='on',source:window.location.pathname,campaign:['utm_source','utm_medium','utm_campaign'].map(k=>new URLSearchParams(location.search).get(k)||'').join(' / '),submissionKey:key.current};
+  const data={...values,consent:values.consent==='on',source:window.location.pathname,campaign:campaign(),submissionKey:key.current};
   const parsed=leadSchema.safeParse(data);
   if(!parsed.success){const fields=parsed.error.flatten().fieldErrors;setErrors(fields);const first=Object.keys(fields)[0];form.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();return;}
   setErrors({});setBusy(true);
