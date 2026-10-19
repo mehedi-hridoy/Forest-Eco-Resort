@@ -8,7 +8,7 @@ import {facilityIcon} from '@/components/facilityIcons';
 export type FacilityItem={id:string;title:string;phase:number;category:string};
 
 const WORLDS=[
- {key:'Accommodation',verb:'Stay',line:'Villas, suites and rooms',image:'/images/discover/villa-private.jpg'},
+ {key:'Accommodation',verb:'Stay',line:'Villas, suites and rooms',image:'/images/villas/private.jpg'},
  {key:'Dining',verb:'Dine',line:'From café to fine dining',image:'/images/facilities/dining.jpg'},
  {key:'Wellness',verb:'Restore',line:'Spa, sauna and stillness',image:'/images/facilities/wellness.jpg'},
  {key:'Golf & Sports',verb:'Play',line:'Range, greens and sport',image:'/images/discover/golf.jpg'},

@@ -83,7 +83,7 @@ export default function ShareholderBenefits({page}:{page:Entry}){
     <p className="eyebrow">BECOME A SHAREHOLDER</p>
     <h2>Request the<br/>full brief.</h2>
     <p>Our team will share the approved shareholder documentation, the current share structure, and arrange a conversation on how the benefits apply to you.</p>
-    <Link className="action" href="/contact?interest=Villa%20Ownership">Request shareholder details <ArrowUpRight size={18}/></Link>
+    <Link className="action" href="/get-in-touch?interest=Villa%20Ownership">Request shareholder details <ArrowUpRight size={18}/></Link>
    </div>
    <div className="benefits-cta-highlights">
     <div><strong>One-time investment</strong><p>No recurring membership fees. Ownership is yours.</p></div>

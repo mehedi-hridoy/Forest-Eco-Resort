@@ -3,13 +3,14 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import bcrypt from 'bcryptjs';
-import {randomBytes,createHash,timingSafeEqual} from 'node:crypto';
+import {randomBytes,createHash,timingSafeEqual,randomUUID} from 'node:crypto';
 import path from 'node:path';
 import multer from 'multer';
 import {z,ZodError} from 'zod';
 import {db} from './db';
 import {leadSchema,contentSchema,roles,statuses,kinds,REMOTE_MEDIA} from '../lib/validation';
 import {siteUrl} from '../lib/site';
+import {brochureFor} from '../lib/villas';
 import {processNotifications} from './notifications';
 import type {User,Prisma} from '@prisma/client';
 
@@ -94,6 +95,22 @@ app.post('/api/v1/leads',rateLimit({windowMs:3600000,limit:12,standardHeaders:tr
  try{await processNotifications();}catch{console.error('Notification delivery failed; it will be retried.');}
  res.status(201).json({id:lead.id,message:'Your inquiry has been received.'});
 });
+app.post('/api/v1/brochure-requests',rateLimit({windowMs:3600000,limit:20,standardHeaders:true,legacyHeaders:false,message:{error:{message:'Too many requests. Please try again later.'}}}),async(req,res)=>{
+ const input=z.object({villa:z.string().min(1).max(120),name:z.string().trim().min(2,'Please enter your name.').max(120),mobile:z.string().trim().regex(/^\+?[\d\s()-]{8,20}$/,'Enter a valid mobile number.'),source:z.string().max(300).optional()}).parse(req.body);
+ const villa=await db.content.findFirst({where:{kind:'villas',slug:input.villa,OR:[{status:'Published'},{status:'Scheduled',publishAt:{lte:new Date()}}]}});
+ if(!villa)return fail(res,404,'This villa is not available.');
+ const brochureUrl=brochureFor(villa.slug,villa.data);
+ const note=`Brochure requested for ${villa.title}.${brochureUrl?'':' No brochure is uploaded yet; please send it manually.'}`;
+ const recent=await db.lead.findFirst({where:{mobile:input.mobile,villa:villa.title,createdAt:{gte:new Date(Date.now()-3600000)}}});
+ if(!recent){
+  await db.$transaction(async tx=>{
+   const l=await tx.lead.create({data:{submissionKey:randomUUID(),fullName:input.name,mobile:input.mobile,email:'',interest:'Villa Ownership',villa:villa.title,contactMethod:'Phone',message:note,source:input.source?.slice(0,300)||'/villas-ownership',consentAt:new Date(),activities:{create:{kind:'Brochure',text:note}}}});
+   await tx.notification.create({data:{leadId:l.id,recipient:process.env.SALES_NOTIFICATION_EMAIL||'',subject:`Brochure request: ${villa.title}`,body:`${input.name} (${input.mobile}) requested the ${villa.title} brochure. Details: ${origin()}/admin`,status:process.env.SMTP_HOST&&process.env.SALES_NOTIFICATION_EMAIL?'Pending':'Unconfigured'}});
+  });
+  try{await processNotifications();}catch{console.error('Notification delivery failed; it will be retried.');}
+ }
+ res.json({brochureUrl,villa:villa.title});
+});
 function leadWhere(req:Request):Prisma.LeadWhereInput{
  const q=typeof req.query.q==='string'?req.query.q.slice(0,200):'';
  return {...(req.user!.role==='Sales Executive'?{assignedTo:req.user!.id}:req.query.assignedTo?{assignedTo:String(req.query.assignedTo)}:{}),...(req.query.status?{status:String(req.query.status)}:{}),...(req.query.interest?{interest:String(req.query.interest)}:{}),...(req.query.source?{source:{contains:String(req.query.source)}}:{}),...(req.query.from||req.query.to?{createdAt:{...(req.query.from?{gte:z.coerce.date().parse(req.query.from)}:{}),...(req.query.to?{lte:z.coerce.date().parse(req.query.to)}:{})}}:{}),...(q?{OR:['fullName','email','mobile','id'].map(k=>({[k]:{contains:q}}))}:{})};
@@ -101,9 +118,27 @@ function leadWhere(req:Request):Prisma.LeadWhereInput{
 const pagination=(req:Request)=>({page:Math.max(1,Number(req.query.page)||1),limit:Math.min(100,Math.max(1,Number(req.query.limit)||20))});
 app.get('/api/v1/admin/leads',leadRead,async(req,res)=>{const {page,limit}=pagination(req),where=leadWhere(req);const [items,total]=await Promise.all([db.lead.findMany({where,include:{assignee:{select:{name:true}}},orderBy:req.query.sort==='priority'?{priority:'asc'}:{createdAt:'desc'},skip:(page-1)*limit,take:limit}),db.lead.count({where})]);res.json({items,total,page,limit});});
 app.get('/api/v1/admin/leads/export',permit('Sales Manager'),async(req,res)=>{
- const leads=await db.lead.findMany({where:leadWhere(req),orderBy:{createdAt:'desc'},take:10000});const cols=['id','fullName','email','mobile','interest','status','priority','source','createdAt'];
- const csv=(v:unknown)=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"' $&").replace(/"/g,'""')+'"';
- await audit(req.user!.id,'leads.export',undefined,`${leads.length} records`);res.setHeader('Content-Type','text/csv; charset=utf-8');res.attachment('forest-leads.csv');res.send('\uFEFF'+[cols.join(','),...leads.map(l=>cols.map(c=>csv((l as any)[c])).join(','))].join('\r\n'));
+ const leads=await db.lead.findMany({where:leadWhere(req),include:{assignee:{select:{name:true}}},orderBy:{createdAt:'desc'},take:10000});
+ const cols:[string,string,number][]=[['Received','createdAt',20],['Name','fullName',24],['Mobile','mobile',18],['Email','email',30],['Interest','interest',18],['Villa','villa',16],['Purpose','purpose',14],['Contact method','contactMethod',15],['Contact time','contactTime',14],['Status','status',20],['Priority','priority',10],['Assigned to','assignee',18],['Message','message',50],['Source','source',22],['Campaign','campaign',22],['Reference','id',28]];
+ const value=(l:any,k:string)=>k==='assignee'?l.assignee?.name??'':k==='createdAt'?new Date(l.createdAt).toISOString().replace('T',' ').slice(0,16):l[k]??'';
+ const format=req.query.format==='xlsx'?'xlsx':'csv',stamp=new Date().toISOString().slice(0,10);
+ await audit(req.user!.id,'leads.export',undefined,`${leads.length} records (${format})`);
+ if(format==='xlsx'){
+  const {default:ExcelJS}=await import('exceljs');
+  const book=new ExcelJS.Workbook();book.creator='Forest Eco Resort';book.created=new Date();
+  const sheet=book.addWorksheet('Leads',{views:[{state:'frozen',ySplit:1}]});
+  sheet.columns=cols.map(([header,key,width])=>({header,key,width}));
+  // Every cell is written as text, so values such as "=cmd" are never evaluated as formulas.
+  leads.forEach(l=>sheet.addRow(Object.fromEntries(cols.map(([,k])=>[k,String(value(l,k))]))));
+  const head=sheet.getRow(1);head.font={bold:true,color:{argb:'FFFFFFFF'}};head.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF173A2C'}};head.height=22;
+  sheet.autoFilter={from:{row:1,column:1},to:{row:1,column:cols.length}};
+  res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');res.attachment(`forest-leads-${stamp}.xlsx`);
+  return res.send(Buffer.from(await book.xlsx.writeBuffer()));
+ }
+ // Neutralise spreadsheet formulas, but leave phone numbers such as +8801… readable.
+ const csv=(v:unknown)=>{const t=String(v??'');return '"'+(/^\+?\d[\d\s()-]*$/.test(t)?t:t.replace(/^[=+@\-\t\r]/,"'$&")).replace(/"/g,'""')+'"';};
+ res.setHeader('Content-Type','text/csv; charset=utf-8');res.attachment(`forest-leads-${stamp}.csv`);
+ res.send('\uFEFF'+[cols.map(([h])=>h).join(','),...leads.map(l=>cols.map(([,k])=>csv(value(l,k))).join(','))].join('\r\n'));
 });
 async function permittedLead(req:Request){return db.lead.findFirst({where:{id:String(req.params.id),...(req.user!.role==='Sales Executive'?{assignedTo:req.user!.id}:{})},include:{activities:{orderBy:{createdAt:'desc'}},assignee:{select:{name:true}}}});}
 app.get('/api/v1/admin/leads/:id',leadRead,async(req,res)=>{const l=await permittedLead(req);if(!l)return fail(res,404,'Lead not found.');res.json(l);});

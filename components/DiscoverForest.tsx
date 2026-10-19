@@ -18,8 +18,8 @@ const CHAPTERS=[
 ];
 
 const STAYS=[
- {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:`${IMG}/villa-private.jpg`},
- {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:`${IMG}/villa-duplex.jpg`},
+ {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:'/images/villas/private.jpg'},
+ {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:'/images/villas/duplex.jpg'},
  {title:'Five-Star Lodge',text:'Nine storeys, crowned by an infinity pool.',image:`${IMG}/lodge.jpg`},
  {title:'Luxury Guest House',text:'Six storeys, boutique in spirit.',image:`${IMG}/guest-house.jpg`},
 ];
@@ -114,7 +114,7 @@ export default function DiscoverForest({page,facilityCount}:{page:Entry;facility
     <h2>Your next chapter<br/><em>begins in nature.</em></h2>
     <p>Villa plans, share details and the development roadmap — shared on request.</p>
     <div className="df-close-actions">
-     <Link className="action light" href="/contact?interest=Project%20Information">Request details <ArrowUpRight size={18}/></Link>
+     <Link className="action light" href="/get-in-touch?interest=Project%20Information">Request details <ArrowUpRight size={18}/></Link>
      <Link className="quiet-link" href="/facilities">All facilities <ArrowUpRight size={16}/></Link>
     </div>
    </div>

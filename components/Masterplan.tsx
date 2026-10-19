@@ -92,7 +92,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
    <h2>One destination.<br/><em>An evolving experience.</em></h2>
    <p>Request the full masterplan brief, phase timelines and ownership options from the team.</p>
    <div className="mp-end-actions">
-    <Link className="action" href="/contact?interest=Project%20Information">Request project information <ArrowUpRight size={18}/></Link>
+    <Link className="action" href="/get-in-touch?interest=Project%20Information">Request project information <ArrowUpRight size={18}/></Link>
     <Link className="quiet-link" href="/shareholder-benefits">Shareholder benefits <ArrowUpRight size={16}/></Link>
    </div>
   </section>

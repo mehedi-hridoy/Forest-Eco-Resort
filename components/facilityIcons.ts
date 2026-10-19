@@ -1,7 +1,11 @@
-import {DoorOpen,ConciergeBell,Hotel,BedDouble,Home,Utensils,Coffee,Waves,Droplets,Flower2,Trees,Leaf,Footprints,Baby,Route,Car,ShieldCheck,Flag,GraduationCap,Armchair,Building2,ShoppingBag,Landmark,Presentation,Mountain,Trophy,PartyPopper,Gamepad2,Wine,Crown,Gem,Sparkles,Dumbbell,Bath,CircleCheck,type LucideIcon} from 'lucide-react';
+import {DoorOpen,ConciergeBell,Hotel,BedDouble,Home,Utensils,Coffee,Waves,Droplets,Flower2,Trees,Leaf,Footprints,Baby,Route,Car,ShieldCheck,Flag,GraduationCap,Armchair,Building2,ShoppingBag,Landmark,Presentation,Mountain,Trophy,PartyPopper,Gamepad2,Wine,Crown,Gem,Sparkles,Dumbbell,Bath,CircleCheck,ScrollText,type LucideIcon} from 'lucide-react';
 
 // First match wins, so specific phrases come before generic ones.
 const RULES:[RegExp,LucideIcon][]=[
+ [/ownership|kabala|deed|title/i,ScrollText],
+ [/storey|duplex/i,Building2],
+ [/standalone/i,Home],
+ [/verandah|veranda|forest.view|view/i,Trees],
  [/entrance|reception/i,DoorOpen],
  [/lobby|concierge/i,ConciergeBell],
  [/presidential|signature villa/i,Crown],
