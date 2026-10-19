@@ -4,7 +4,7 @@ import phases from './phases.json';
 const db=new PrismaClient();
 const records:any[]=[...phases];
 const add=(kind:string,slug:string,title:string,data:any,sortOrder=0,status='Published')=>records.push({kind,slug,title,data,sortOrder,status});
-const nav=[['home','Home','/'],['estate','The Estate','/estate'],['experience','The Experience','/experience'],['villas','Villas & Ownership','/villas-ownership'],['nature','In Harmony with Nature','/sustainability'],['masterplan','The Masterplan','/masterplan'],['discover','Discover Forest','/discover-forest'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
+const nav=[['home','Home','/'],['estate','The Estate','/estate'],['experience','The Experience','/experience'],['villas','Villas & Ownership','/villas-ownership'],['nature','In Harmony with Nature','/sustainability'],['masterplan','The Masterplan','/masterplan'],['shareholder-benefits','Shareholder Benefits','/shareholder-benefits'],['discover','Discover Forest','/discover-forest'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
 nav.forEach(([slug,title,url],i)=>add('navigation',slug,title,{url},i));
 const pages=[
  ['home','Where Nature Becomes an Experience.','A premium destination where nature, luxury, hospitality, adventure and leisure come together in one extraordinary setting.','/images/forest.jpg'],
@@ -19,6 +19,19 @@ const pages=[
  ['contact','Let’s start a conversation.','Whether you are exploring a private retreat or simply want to know more, we would love to hear from you.','/images/forest.jpg']
 ];
 pages.forEach(([slug,title,body,image])=>add('pages',slug,title,{body,image,imageLabel:'Illustrative reference · not project photography',seoTitle:`${title} | Forest Eco Resort`,seoDescription:body}));
+const shareholderBenefits=[
+ 'An opportunity to become a shareholder in a premium forest eco-resort in Gazipur.',
+ 'Legally recognized and transferable ownership through Sub-Kabala (registered deed of conveyance).',
+ 'Enjoy 3 complimentary days and 2 nights at the resort annually for each share.',
+ 'Special discounts of up to 50–60% on resort stays and selected facilities throughout the year.',
+ 'Exclusive discounted vacation opportunities at other resorts operated by NEXCENT GROUP.',
+ 'Long-term ownership and potential profit opportunities through a one-time investment.',
+ "Potential appreciation in share value in line with the project's development and prevailing market conditions.",
+ 'The opportunity to transfer ownership across generations, subject to applicable laws and terms.',
+ 'The potential to enjoy personal accommodation and leisure in the lush, scenic surroundings of Gazipur.',
+ 'A unique combination of investment, asset ownership, leisure, and premium lifestyle benefits.',
+];
+add('pages','shareholder-benefits','Shareholder Benefits',{body:'A Forest Eco Resort share is more than an investment. It is registered Sub-Kabala ownership, an annual retreat into the forests of Gazipur, and member access across the NEXCENT GROUP portfolio — combined into a single, transferable asset.',image:'/images/cabin.jpg',imageLabel:'Illustrative reference',seoTitle:'Shareholder Benefits | Forest Eco Resort',seoDescription:'Ten shareholder benefits: Sub-Kabala ownership, annual complimentary stays, 50–60% member discounts, and participation in a maturing premium eco-resort destination.',benefits:shareholderBenefits});
 add('settings','global','Global settings',{location:'Bhabanipur, Rajendrapur, Gazipur, Bangladesh',phones:['01897660045','01897660049','01897660050'],email:'theforestecoresort@gmail.com',emailVerified:false,facebook:'https://www.facebook.com/forestecoresort',instagram:'https://www.instagram.com/forestecoresortbd/',mapUrl:'https://share.google/d7AFZ0qrYmK0XDSn2',footer:'A destination shaped by nature. A different way to get away.',fontFamily:'Arial, sans-serif',privacyVersion:'2026-10-16',analyticsEnabled:false});
 add('sections','home-intro','A destination shaped by nature.',{page:'home',eyebrow:'THE FOREST WAY OF LIFE',body:'Some places invite you to visit. Others invite you to feel differently. In the natural surroundings of Bhawal, Forest Eco Resort is envisioned as a place for peaceful escapes, meaningful experiences and private retreats.',image:'/images/woods.jpg',imageLabel:'Illustrative reference · not project photography',background:'ivory',ctaLabel:'Explore the estate',ctaUrl:'/estate'});
 add('sections','estate-mission','Our mission',{page:'estate',eyebrow:'PURPOSE',body:'To create a premium destination where nature, luxury and hospitality come together—offering people meaningful experiences, peaceful escapes and memorable moments while preserving the beauty and balance of the natural environment.'},1);
