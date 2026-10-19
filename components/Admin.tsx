@@ -1,14 +1,15 @@
 'use client';
-import {useEffect,useState,useCallback} from 'react';
+import {useEffect,useState,useCallback,useRef,createContext,useContext} from 'react';
 import Link from 'next/link';
 import {Leaf,LogOut,ArrowUpRight,Plus,Search,LayoutDashboard,Users,FileText,Image as ImageIcon,Settings,Shield,Mail,ChevronRight,Download,UploadCloud,Cloud,Images,Film,Trash2,Video} from 'lucide-react';
 import {roles,statuses,kinds} from '@/lib/validation';
 import {UploadButton,UploadDropzone} from '@/lib/uploadthing';
+const CsrfContext=createContext<string>('');
 type Row=Record<string,any>;
 const contentRoles=['Super Admin','Content Administrator','Analyst / Viewer'];
 const salesRoles=['Super Admin','Sales Manager','Sales Executive','Analyst / Viewer'];
 const defaults:Record<string,Row>={
- pages:{body:'',image:'',imageLabel:'',seoTitle:'',seoDescription:''},sections:{page:'home',eyebrow:'',body:'',image:'',imageLabel:'',mobileImage:'',background:'ivory',ctaLabel:'',ctaUrl:''},navigation:{url:'/'},settings:{location:'',phones:[],email:'',emailVerified:false,facebook:'',instagram:'',mapUrl:'',fontFamily:'Arial, sans-serif',footer:''},villas:{description:'',image:'',imageLabel:'Render',specifications:'',phase:'',floorPlan:'',brochureId:'',statusLabel:'Status unverified',seoTitle:''},experiences:{description:'',image:'',imageLabel:'',facilities:[],statusLabel:'Status unverified'},facilities:{description:'',category:'',phase:1,statusLabel:'Status unverified',image:''},masterplan:{eyebrow:'',description:'',narrative:'',purpose:'',concept:'',landValue:0,landUnit:'Bigha',areaValue:0,areaUnit:'SFT',costValue:0,costCurrency:'BDT',facilities:[],image:'',imageLabel:'Render',statusLabel:'Status unverified',seoTitle:'',seoDescription:''},gallery:{image:'',alt:'',category:'Nature',assetType:'Render',caption:'',phase:1},sliders:{eyebrow:'',headline:'',description:'',image:'',video:'',ctaLabel:'',ctaUrl:''},articles:{description:'',body:'',image:'',imageLabel:'',category:'Project Updates',author:'',seoTitle:'',seoDescription:''},brochures:{description:'',mediaId:'',version:'',expiresAt:'',private:false},faqs:{answer:''}};
+ pages:{body:'',image:'',imageLabel:'',seoTitle:'',seoDescription:''},sections:{page:'home',eyebrow:'',body:'',image:'',imageLabel:'',mobileImage:'',background:'ivory',ctaLabel:'',ctaUrl:''},navigation:{url:'/'},settings:{location:'',phones:[],email:'',emailVerified:false,facebook:'',instagram:'',mapUrl:'',fontFamily:'Arial, sans-serif',footer:''},villas:{description:'',image:'',imageLabel:'Render',specifications:'',phase:'',floorPlan:'',brochureId:'',statusLabel:'Status unverified',seoTitle:''},experiences:{description:'',image:'',imageLabel:'',facilities:[],statusLabel:'Status unverified'},facilities:{description:'',category:'',phase:1,statusLabel:'Status unverified',image:''},masterplan:{eyebrow:'',description:'',narrative:'',purpose:'',concept:'',landValue:0,landUnit:'Bigha',areaValue:0,areaUnit:'SFT',costValue:0,costCurrency:'BDT',facilities:[],image:'',imageLabel:'Render',statusLabel:'Status unverified',seoTitle:'',seoDescription:''},gallery:{image:'',alt:'',category:'Nature',assetType:'Render',caption:'',phase:1},sliders:{eyebrow:'',headline:'',description:'',image:'',video:''},articles:{description:'',body:'',image:'',imageLabel:'',category:'Project Updates',author:'',seoTitle:'',seoDescription:''},brochures:{description:'',mediaId:'',version:'',expiresAt:'',private:false},faqs:{answer:''}};
 const friendly=(s:string)=>s.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase());
 export default function Admin(){
  const [user,setUser]=useState<Row|null>(null),[csrf,setCsrf]=useState(''),[ready,setReady]=useState(false),[tab,setTab]=useState('Overview'),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
@@ -37,8 +38,9 @@ export default function Admin(){
  if(!ready)return <main className="admin-loading">Loading your workspace…</main>;
  if(!user)return <main className="admin-login"><div className="login-art"><Leaf size={56} strokeWidth={1}/><p className="eyebrow">FOREST ECO RESORT</p><h1>Behind every<br/>great escape.</h1><p>A thoughtful space to manage the destination.</p><Link href="/">← Back to Forest</Link></div><form onSubmit={login} className="login-form"><p className="eyebrow">THE FOREST WORKSPACE</p><h2>{authMode==='forgot'?'Reset your password':authMode==='reset'?'Choose a new password':'Welcome back.'}</h2><p>{authMode==='login'?'Sign in to manage content and conversations.':'Secure account recovery.'}</p>{authMode!=='reset'&&<label>Email address<input name="email" type="email" autoComplete="username" required/></label>}{authMode!=='forgot'&&<label>Password<input name="password" type="password" autoComplete={authMode==='reset'?'new-password':'current-password'} minLength={authMode==='reset'?14:undefined} required/></label>}{error&&<p className="field-error" role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}<button disabled={busy} className="admin-primary">{busy?'Please wait…':authMode==='login'?'Sign in →':authMode==='forgot'?'Send reset link':'Save password'}</button><button type="button" className="text-button" onClick={()=>{setAuthMode(authMode==='login'?'forgot':'login');setError('')}}>{authMode==='login'?'Forgot your password?':'Back to sign in'}</button><small>Access is provisioned by your administrator. There are no default credentials.</small></form></main>;
  const canEdit=['Super Admin','Content Administrator'].includes(user.role),canSales=['Super Admin','Sales Manager','Sales Executive'].includes(user.role);
- const tabs=[...(salesRoles.includes(user.role)?['Overview','Leads']:[]),...(contentRoles.includes(user.role)?['Slider','Gallery','Content','Media']:[]),...(['Super Admin','Sales Manager'].includes(user.role)?['Notifications']:[]),...(user.role==='Super Admin'?['Users']:[]),...(['Super Admin','Analyst / Viewer'].includes(user.role)?['Audit']:[])];
- return <main className="admin-shell"><aside className="admin-sidebar"><Link href="/" className="admin-brand"><Leaf size={28}/> FOREST <small>WORKSPACE</small></Link><p className="eyebrow">DESTINATION MANAGEMENT</p><nav>{tabs.map((t,i)=>{const Icon=({Overview:LayoutDashboard,Leads:Users,Slider:Film,Gallery:Images,Content:FileText,Media:ImageIcon,Notifications:Mail,Users:Shield,Audit:Settings} as any)[t];return <button key={t} className={tab===t?'selected':''} onClick={()=>changeTab(t)}><Icon size={19}/>{t}</button>})}</nav><div className="admin-profile"><strong>{user.name}</strong><small>{user.role}</small><button onClick={()=>run(async()=>{await api('/auth/logout','POST');setUser(null);setCsrf('')})}><LogOut size={16}/> Sign out</button></div></aside><div className="admin-work"><header className="admin-header"><span>Forest Eco Resort / {tab}</span><Link href="/" target="_blank">View website <ArrowUpRight size={16}/></Link></header><section className="admin-main"><div className="admin-title"><div><p className="eyebrow">YOUR DESTINATION, AT A GLANCE</p><h1>{tab==='Overview'?'A little perspective.':tab}</h1></div><span className="live-label">Live database</span></div>{error&&<div className="admin-error" role="alert">{error}</div>}{notice&&<div className="admin-success" role="status">{notice}</div>}
+ const HIDDEN_TABS:string[]=['Users','Audit'];
+ const tabs=[...(salesRoles.includes(user.role)?['Overview','Leads']:[]),...(contentRoles.includes(user.role)?['Slider','Gallery','Content','Media']:[]),...(['Super Admin','Sales Manager'].includes(user.role)?['Notifications']:[]),...(user.role==='Super Admin'?['Users']:[]),...(['Super Admin','Analyst / Viewer'].includes(user.role)?['Audit']:[])].filter(t=>!HIDDEN_TABS.includes(t));
+ return <CsrfContext.Provider value={csrf}><main className="admin-shell"><aside className="admin-sidebar"><Link href="/" className="admin-brand"><Leaf size={28}/> FOREST <small>WORKSPACE</small></Link><p className="eyebrow">DESTINATION MANAGEMENT</p><nav>{tabs.map((t,i)=>{const Icon=({Overview:LayoutDashboard,Leads:Users,Slider:Film,Gallery:Images,Content:FileText,Media:ImageIcon,Notifications:Mail,Users:Shield,Audit:Settings} as any)[t];return <button key={t} className={tab===t?'selected':''} onClick={()=>changeTab(t)}><Icon size={19}/>{t}</button>})}</nav><div className="admin-profile"><strong>{user.name}</strong><small>{user.role}</small><button onClick={()=>run(async()=>{await api('/auth/logout','POST');setUser(null);setCsrf('')})}><LogOut size={16}/> Sign out</button></div></aside><div className="admin-work"><header className="admin-header"><span>Forest Eco Resort / {tab}</span><Link href="/" target="_blank">View website <ArrowUpRight size={16}/></Link></header><section className="admin-main"><div className="admin-title"><div><p className="eyebrow">YOUR DESTINATION, AT A GLANCE</p><h1>{tab==='Overview'?'A little perspective.':tab}</h1></div><span className="live-label">Live database</span></div>{error&&<div className="admin-error" role="alert">{error}</div>}{notice&&<div className="admin-success" role="status">{notice}</div>}
  {tab==='Overview'&&<><div className="admin-filters"><label>From<input type="date" value={from} onChange={e=>setFrom(e.target.value)}/></label><label>Until<input type="date" value={to?to.slice(0,10):''} onChange={e=>setTo(e.target.value?e.target.value+'T23:59:59.999Z':'')}/></label></div><div className="metric-grid">{[['total','Total inquiries'],['new','New inquiries'],['qualified','Qualified'],['followUps','Follow-ups due'],['converted','Converted']].map(([k,l])=><div key={k}><span>{l}</span><strong>{analytics[k]??0}</strong></div>)}</div><div className="admin-two"><section className="admin-panel"><h2>Inquiry activity</h2>{Object.keys(analytics.trends||{}).length?<div className="trend-bars">{Object.entries(analytics.trends).map(([day,n])=><div key={day}><small>{day}</small><span style={{width:`${Number(n)/Math.max(...Object.values(analytics.trends).map(Number))*100}%`}}/>{String(n)}</div>)}</div>:<Empty text="Your inquiry trends will appear here after the first submission."/>}</section><section className="admin-panel"><h2>Where conversations begin</h2>{Object.keys(analytics.sources||{}).length?Object.entries(analytics.sources).map(([s,n])=><p className="source-row" key={s}><span>{s}</span><strong>{String(n)}</strong></p>):<Empty text="No inquiry sources yet."/>}</section></div><section className="admin-panel"><h2>Recent activity</h2>{analytics.activities?.length?analytics.activities.map((a:Row)=><div className="activity-row" key={a.id}><span>{a.kind}</span><p>{a.text}</p><small>{new Date(a.createdAt).toLocaleString()}</small></div>):<Empty text="No activity yet. New conversations and staff updates will appear here."/>}</section></>}
  {tab==='Leads'&&<><div className="admin-filters"><label><Search size={15}/> Search<input placeholder="Name, email, phone or ID" value={query} onChange={e=>{setQuery(e.target.value);setPage(1)}}/></label><label>Status<select value={filter} onChange={e=>{setFilter(e.target.value);setPage(1)}}><option value="">All statuses</option>{statuses.map(s=><option key={s}>{s}</option>)}</select></label><label>Interest<select value={interestFilter} onChange={e=>setInterestFilter(e.target.value)}><option value="">All interests</option>{['Villa Ownership','Investment','Resort Stay','Project Information'].map(s=><option key={s}>{s}</option>)}</select></label><label>Assigned staff<select value={assigneeFilter} onChange={e=>setAssigneeFilter(e.target.value)}><option value="">All staff</option>{staff.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label><label>Source<input value={sourceFilter} onChange={e=>setSourceFilter(e.target.value)} placeholder="/contact"/></label><label>From<input type="date" value={from} onChange={e=>setFrom(e.target.value)}/></label><label>Until<input type="date" value={to.slice(0,10)} onChange={e=>setTo(e.target.value?e.target.value+'T23:59:59.999Z':'')}/></label><label>Sort<select value={sort} onChange={e=>setSort(e.target.value)}><option value="date">Newest first</option><option value="priority">Priority</option></select></label>{['Super Admin','Sales Manager'].includes(user.role)&&<a className="admin-secondary" href={'/api/v1/admin/leads/export?'+leadParams()}><Download size={16}/> Export filtered</a>}</div><div className="admin-panel table-scroll"><table><thead><tr>{['Name','Interest','Status','Assigned','Received',''].map((s,i)=><th key={i}>{s}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.id}><td><strong>{r.fullName}</strong><small>{r.email}</small></td><td>{r.interest}</td><td><span className="badge">{r.status}</span></td><td>{r.assignee?.name||'Unassigned'}</td><td>{new Date(r.createdAt).toLocaleDateString()}</td><td><button onClick={()=>run(async()=>{setLead(await api('/admin/leads/'+r.id));setNote('')})}>Open <ChevronRight size={14}/></button></td></tr>)}</tbody></table>{!rows.length&&<Empty text="No inquiries match this view."/>}</div><div className="pagination"><button disabled={page<=1} onClick={()=>setPage(page-1)}>Previous</button><span>Page {page} · {total} records</span><button disabled={page*20>=total} onClick={()=>setPage(page+1)}>Next</button></div>{lead&&<section className="admin-panel lead-detail"><div className="panel-title"><h2>{lead.fullName}</h2><button onClick={()=>setLead(null)}>Close</button></div><p>{lead.email} · {lead.mobile}</p><dl className="lead-facts">{['id','interest','villa','purpose','contactMethod','contactTime','message','source','campaign','consentAt','privacyVersion'].map(k=><div key={k}><dt>{friendly(k)}</dt><dd>{lead[k]||'—'}</dd></div>)}</dl>{canSales&&<><div className="form-grid"><label>Status<select value={lead.status} onChange={e=>setLead({...lead,status:e.target.value})}>{statuses.map(s=><option key={s}>{s}</option>)}</select></label><label>Priority<select value={lead.priority} onChange={e=>setLead({...lead,priority:e.target.value})}>{['Low','Normal','High','Urgent'].map(s=><option key={s}>{s}</option>)}</select></label>{['Super Admin','Sales Manager'].includes(user.role)&&<label>Assigned staff<select value={lead.assignedTo||''} onChange={e=>setLead({...lead,assignedTo:e.target.value})}><option value="">Unassigned</option>{staff.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>}<label>Follow-up time (local)<input type="datetime-local" value={lead.followUpAt?localDate(lead.followUpAt):''} onChange={e=>setLead({...lead,followUpAt:e.target.value?new Date(e.target.value).toISOString():null})}/></label><label>Last contact (local)<input type="datetime-local" value={lead.lastContactAt?localDate(lead.lastContactAt):''} onChange={e=>setLead({...lead,lastContactAt:e.target.value?new Date(e.target.value).toISOString():null})}/></label></div><label>Internal note / contact attempt<textarea value={note} onChange={e=>setNote(e.target.value)} maxLength={4000}/></label><button className="admin-primary" disabled={busy} onClick={saveLead}>Save lead changes</button></>}<h3>Activity history</h3>{lead.activities.map((a:Row)=><div className="activity-row" key={a.id}><strong>{a.kind}</strong><p>{a.text}</p><small>{new Date(a.createdAt).toLocaleString()}</small></div>)}</section>}</>}
  {tab==='Slider'&&<SliderManager rows={rows} canEdit={canEdit} busy={busy} api={api} run={run} reload={reload} setNotice={setNotice} setError={setError}/>}
@@ -48,32 +50,39 @@ export default function Admin(){
  {tab==='Users'&&<><form className="admin-panel" onSubmit={e=>{e.preventDefault();const form=e.currentTarget;const body=Object.fromEntries(new FormData(form));run(async()=>{await api('/admin/users','POST',body);form.reset();setNotice('User created. Share access details through your approved internal channel.');await reload()})}}><h2>Provision staff access</h2><div className="form-grid"><label>Full name<input name="name" required/></label><label>Email<input type="email" name="email" required/></label><label>Initial password<input type="password" name="password" minLength={14} required autoComplete="new-password"/></label><label>Role<select name="role">{roles.map(r=><option key={r}>{r}</option>)}</select></label></div><button className="admin-primary" disabled={busy}>Create user</button></form><div className="admin-panel">{rows.map(r=><div className="content-row" key={r.id}><div><strong>{r.name}</strong><small>{r.email}</small></div><select disabled={r.id===user.id} value={r.role} onChange={e=>run(async()=>{await api('/admin/users/'+r.id,'PATCH',{role:e.target.value});await reload()})}>{roles.map(role=><option key={role}>{role}</option>)}</select><button disabled={r.id===user.id} onClick={()=>{if(confirm(`${r.active?'Deactivate':'Activate'} ${r.name}?`))run(async()=>{await api('/admin/users/'+r.id,'PATCH',{active:!r.active});await reload()})}}>{r.active?'Deactivate':'Activate'}</button></div>)}</div></>}
  {tab==='Notifications'&&<section className="admin-panel"><h2>Delivery integrations</h2><p>Email: <strong>{analytics.configured?'Configured':'Not configured'}</strong> · WhatsApp: <strong>Not connected</strong></p><p className="caption">Configure credentials on the server. A failed notification never deletes a saved inquiry.</p>{rows.map(r=><div className="content-row" key={r.id}><div><strong>{r.status}</strong><small>{r.leadId||'Account recovery'} · {r.attempts} attempts</small></div><span>{r.lastError}</span>{['Failed','Unconfigured','Retry'].includes(r.status)&&<button disabled={!analytics.configured} onClick={()=>run(async()=>{await api('/admin/notifications/'+r.id+'/retry','POST');await reload()})}>Retry</button>}</div>)}{!rows.length&&<Empty text="No notification jobs yet."/>}</section>}
  {tab==='Audit'&&<section className="admin-panel">{rows.map(r=><div className="activity-row" key={r.id}><strong>{r.action}</strong><p>{r.detail||r.resourceId||'—'}</p><small>{new Date(r.createdAt).toLocaleString()}</small></div>)}{!rows.length&&<Empty text="No audit events yet."/>}</section>}
- </section></div></main>
+ </section></div></main></CsrfContext.Provider>
 }
 function localDate(value:string){const d=new Date(value);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
 function Empty({text}:{text:string}){return <div className="admin-empty"><Leaf size={28} strokeWidth={1}/><p>{text}</p></div>}
 const IMAGE_FIELDS=['image','mobileImage','floorPlan'];
 const VIDEO_FIELDS=['video'];
-function MediaField({name,value,onChange,kind}:{name:string;value:string;onChange:(v:string)=>void;kind:'image'|'video'}){
+const isValidPreview=(v:string)=>typeof v==='string'&&(v.startsWith('/')||v.startsWith('http'));
+async function uploadMediaFile(file:File,csrf:string,kind:'image'|'video'){
+  const fd=new FormData();fd.append('file',file);fd.append('alt',file.name.replace(/\.[^.]+$/,'').slice(0,120)||'Uploaded media');fd.append('assetType',kind==='video'?'Video':'Photograph');fd.append('publish','true');
+  const res=await fetch('/api/v1/admin/media',{method:'POST',headers:{'x-csrf-token':csrf},body:fd});
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error?.message||'Upload failed.');
+  return data.url||`/api/v1/media/${data.id}`;
+}
+function MediaField({name,value,onChange,kind,label}:{name:string;value:string;onChange:(v:string)=>void;kind:'image'|'video';label?:string}){
+  const csrf=useContext(CsrfContext);
   const [uploading,setUploading]=useState(false);
-  const isHttp=typeof value==='string'&&value.startsWith('http');
-  const placeholder=kind==='image'?'/images/example.jpg or click upload →':'https://… video URL or click upload →';
+  const [err,setErr]=useState('');
+  const inputRef=useRef<HTMLInputElement|null>(null);
+  const accept=kind==='image'?'image/jpeg,image/png,image/webp':'video/mp4,video/webm';
+  const handleFile=async(file:File)=>{setErr('');setUploading(true);try{const url=await uploadMediaFile(file,csrf,kind);onChange(url)}catch(e){setErr((e as Error).message)}finally{setUploading(false);if(inputRef.current)inputRef.current.value=''}};
+  const showPreview=isValidPreview(value);
   return (
-    <label>{friendly(name)}
-      <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
-        <input value={value??''} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{flex:1}}/>
-        <UploadButton
-          endpoint={kind==='image'?'imageUploader':'videoUploader'}
-          onUploadBegin={()=>setUploading(true)}
-          onClientUploadComplete={(res)=>{if(res?.[0]){onChange((res[0] as any).url);}setUploading(false);}}
-          onUploadError={()=>setUploading(false)}
-          appearance={{button:{background:'#2d6a4f',color:'#fff',borderRadius:'6px',padding:'6px 12px',fontSize:'13px',whiteSpace:'nowrap'},allowedContent:{display:'none'}}}
-          content={{button:uploading?'Uploading…':<span style={{display:'flex',alignItems:'center',gap:'4px'}}><UploadCloud size={14}/>Upload {kind}</span>}}
-        />
-        {value&&<button type="button" onClick={()=>onChange('')} style={{fontSize:'11px',color:'#9d3227',padding:'4px 8px'}}>Clear</button>}
+    <label>{label||friendly(name)}
+      <div style={{display:'flex',gap:'8px',alignItems:'center',flexWrap:'wrap'}}>
+        <input ref={inputRef} type="file" accept={accept} onChange={e=>{const f=e.target.files?.[0];if(f)handleFile(f)}} style={{flex:'1 1 220px',padding:'6px',fontSize:'12px',border:'1px solid #c7cdbf',borderRadius:'6px',background:'white'}} disabled={uploading}/>
+        {value&&<button type="button" onClick={()=>onChange('')} style={{fontSize:'11px',color:'#9d3227',padding:'4px 10px',border:'1px solid #e4c7c2',borderRadius:'6px',background:'#f8ecea'}}>Remove {kind}</button>}
       </div>
-      {isHttp&&kind==='image'&&<img src={value} alt="preview" style={{marginTop:'6px',maxHeight:'120px',borderRadius:'6px',objectFit:'cover'}}/>}
-      {isHttp&&kind==='video'&&<video src={value} controls style={{marginTop:'6px',maxHeight:'160px',borderRadius:'6px',width:'100%'}}/>}
+      {uploading&&<small style={{color:'#2d6a4f'}}><UploadCloud size={12} style={{verticalAlign:'middle',marginRight:'4px'}}/>Uploading {kind}…</small>}
+      {err&&<small style={{color:'#9d3227'}}>{err}</small>}
+      {!uploading&&!err&&!value&&<small style={{opacity:.6}}>Max {kind==='image'?'~12MB':'100MB'} · {kind==='image'?'JPEG / PNG / WebP':'MP4 / WebM'}</small>}
+      {showPreview&&kind==='image'&&<img src={value} alt="preview" style={{marginTop:'8px',maxHeight:'160px',borderRadius:'8px',objectFit:'cover',border:'1px solid #e4e6df'}}/>}
+      {showPreview&&kind==='video'&&<video src={value} controls style={{marginTop:'8px',maxHeight:'200px',borderRadius:'8px',width:'100%',border:'1px solid #e4e6df'}}/>}
     </label>
   );
 }
@@ -93,16 +102,18 @@ function slugify(s:string){return s.toLowerCase().trim().replace(/[^a-z0-9]+/g,'
 
 function SliderManager({rows,canEdit,busy,api,run,reload,setNotice}:ManagerProps){
  const [edit,setEdit]=useState<Row|null>(null);
- const published=rows.length;
- const openNew=()=>setEdit({kind:'sliders',slug:'',title:'',status:'Published',sortOrder:rows.length,data:{...defaults.sliders}});
- const save=()=>run(async()=>{if(!edit)return;const slug=edit.slug||slugify(edit.title||'slide-'+(edit.sortOrder+1));const {id,...payload}=edit;await api(id?'/admin/content/'+id:'/admin/content',id?'PUT':'POST',{kind:'sliders',slug,title:payload.title||payload.data.headline||'Slide '+(payload.sortOrder+1),status:payload.status,sortOrder:payload.sortOrder,data:payload.data});setEdit(null);setNotice('Slide saved. Visit the homepage to see it live.');await reload()});
- const remove=(r:Row)=>{if(!confirm(`Delete the slide "${r.title}"? This cannot be undone.`))return;run(async()=>{await api('/admin/content/'+r.id,'PUT',{kind:'sliders',slug:r.slug,title:r.title,status:'Archived',sortOrder:r.sortOrder,data:r.data});setNotice('Slide archived — no longer visible on the homepage.');await reload()})};
+ const [mediaKind,setMediaKind]=useState<'image'|'video'>('image');
+ const openNew=()=>{setMediaKind('image');setEdit({kind:'sliders',slug:'',title:'',status:'Published',sortOrder:rows.length,data:{...defaults.sliders}})};
+ const openEdit=(r:Row)=>{const merged={...r,data:{...defaults.sliders,...r.data}};setMediaKind(merged.data.video?'video':'image');setEdit(merged)};
+ const save=()=>run(async()=>{if(!edit)return;const slug=edit.slug||slugify(edit.title||'slide-'+(edit.sortOrder+1));const {id,...payload}=edit;const cleanData={...payload.data,image:mediaKind==='image'?payload.data.image:'',video:mediaKind==='video'?payload.data.video:''};await api(id?'/admin/content/'+id:'/admin/content',id?'PUT':'POST',{kind:'sliders',slug,title:payload.title||payload.data.headline||'Slide '+(payload.sortOrder+1),status:payload.status,sortOrder:payload.sortOrder,data:cleanData});setEdit(null);setNotice('Slide saved. Visit the homepage to see it live.');await reload()});
+ const remove=(r:Row)=>{if(!confirm(`Delete the slide "${r.title}" permanently?`))return;run(async()=>{await api('/admin/content/'+r.id,'DELETE');setNotice('Slide deleted.');await reload()})};
  const setField=(key:string,value:any)=>setEdit(e=>e?{...e,data:{...e.data,[key]:value}}:e);
+ const published=rows.length;
  return <>
   <section className="admin-panel">
    <div className="panel-title" style={{alignItems:'center'}}>
-    <div><h2 style={{marginBottom:'4px'}}>Homepage slider</h2><p className="caption" style={{margin:0}}>Up to 3 slides shown on the homepage hero in order. Published slides go live immediately.</p></div>
-    {canEdit&&<button className="admin-primary" disabled={published>=3} onClick={openNew} title={published>=3?'Delete a slide first — max 3 active slides.':undefined}><Plus size={16}/> Add slide</button>}
+    <div><h2 style={{marginBottom:'4px'}}>Homepage slider</h2><p className="caption" style={{margin:0}}>Up to 3 slides shown on the homepage hero in order. Each slide is <strong>either</strong> an image <strong>or</strong> a video — not both.</p></div>
+    {canEdit&&<button className="admin-primary" disabled={published>=3} onClick={openNew} title={published>=3?'Delete a slide first — max 3 slides.':undefined}><Plus size={16}/> Add slide</button>}
    </div>
    {!rows.length&&<Empty text="No slides yet. Add your first slide to replace the default hero."/>}
    <div className="slider-admin-grid">
@@ -112,66 +123,69 @@ function SliderManager({rows,canEdit,busy,api,run,reload,setNotice}:ManagerProps
       <span className="slider-card-index">0{i+1}</span>
      </div>
      <div className="slider-card-body">
-      <small className="eyebrow">{r.data.eyebrow||'SLIDE '+(i+1)}</small>
+      {r.data.eyebrow&&<small className="eyebrow">{r.data.eyebrow}</small>}
       <h3>{r.data.headline||r.title}</h3>
       <p className="caption">{r.data.description||'No description.'}</p>
-      <div className="slider-card-tags"><span className="badge">{r.status}</span>{r.data.video&&<span className="badge badge-video"><Video size={11}/> video</span>}{r.data.image&&!r.data.video&&<span className="badge"><ImageIcon size={11}/> image</span>}</div>
-      {canEdit&&<div className="slider-card-actions"><button onClick={()=>setEdit({...r,data:{...defaults.sliders,...r.data}})}>Edit</button><button className="danger" onClick={()=>remove(r)}><Trash2 size={13}/> Delete</button></div>}
+      <div className="slider-card-tags"><span className="badge">{r.status}</span>{r.data.video?<span className="badge badge-video"><Video size={11}/> video</span>:r.data.image?<span className="badge"><ImageIcon size={11}/> image</span>:<span className="badge" style={{background:'#f1b94a',color:'#5c3b00'}}>No media</span>}</div>
+      {canEdit&&<div className="slider-card-actions"><button onClick={()=>openEdit(r)}>Edit</button><button className="danger" onClick={()=>remove(r)}><Trash2 size={13}/> Delete</button></div>}
      </div>
     </article>)}
    </div>
   </section>
   {edit&&<section className="admin-panel content-editor">
    <div className="panel-title"><h2>{edit.id?'Edit slide':'New slide'}</h2><button onClick={()=>setEdit(null)}>Close</button></div>
-   <div className="form-grid"><label>Slide title (internal)<input value={edit.title} onChange={e=>setEdit({...edit,title:e.target.value})} placeholder="Shown only in the admin"/></label><label>Display order<input type="number" min="0" value={edit.sortOrder} onChange={e=>setEdit({...edit,sortOrder:Number(e.target.value)})}/></label><label>Publication status<select value={edit.status} onChange={e=>setEdit({...edit,status:e.target.value})}>{['Draft','Published','Archived'].map(s=><option key={s}>{s}</option>)}</select></label></div>
-   <h3 style={{marginTop:'20px'}}>What visitors see</h3>
-   <div className="form-grid"><label>Eyebrow (small label on top)<input value={edit.data.eyebrow||''} onChange={e=>setField('eyebrow',e.target.value)} placeholder="FOREST ECO RESORT — RAJENDRAPUR, GAZIPUR"/></label><label>CTA button label<input value={edit.data.ctaLabel||''} onChange={e=>setField('ctaLabel',e.target.value)} placeholder="Discover Forest"/></label></div>
-   <label>Headline<textarea rows={2} value={edit.data.headline||''} onChange={e=>setField('headline',e.target.value)} placeholder="Where Nature Becomes an Experience."/></label>
-   <label>Description<textarea rows={3} value={edit.data.description||''} onChange={e=>setField('description',e.target.value)} placeholder="A short sentence shown under the headline."/></label>
-   <label>CTA button link<input value={edit.data.ctaUrl||''} onChange={e=>setField('ctaUrl',e.target.value)} placeholder="/discover-forest"/></label>
-   <h3 style={{marginTop:'20px'}}>Media <small style={{fontWeight:'normal',opacity:.6}}>— upload an image, or a video for an animated slide</small></h3>
-   <MediaField name="image" value={edit.data.image||''} onChange={v=>setField('image',v)} kind="image"/>
-   <MediaField name="video" value={edit.data.video||''} onChange={v=>setField('video',v)} kind="video"/>
-   <p className="caption">If both are set, the video plays and the image is used as its poster/fallback.</p>
+   <h3 style={{marginTop:0}}>Choose media type</h3>
+   <p className="caption" style={{marginTop:0}}>Pick one — a slide is either a still image or a looping video.</p>
+   <div className="media-kind-switch" role="radiogroup" aria-label="Slide media type">
+    <label className={mediaKind==='image'?'selected':''}><input type="radio" name="mediaKind" checked={mediaKind==='image'} onChange={()=>setMediaKind('image')}/><ImageIcon size={16}/> Image slide</label>
+    <label className={mediaKind==='video'?'selected':''}><input type="radio" name="mediaKind" checked={mediaKind==='video'} onChange={()=>setMediaKind('video')}/><Video size={16}/> Video slide</label>
+   </div>
+   {mediaKind==='image'
+    ?<MediaField name="image" label="Upload image for this slide" value={edit.data.image||''} onChange={v=>setField('image',v)} kind="image"/>
+    :<MediaField name="video" label="Upload video for this slide (plays muted and loops)" value={edit.data.video||''} onChange={v=>setField('video',v)} kind="video"/>}
+   <h3 style={{marginTop:'28px'}}>Text shown on the slide</h3>
+   <div className="form-grid"><label>Small label on top (eyebrow)<input value={edit.data.eyebrow||''} onChange={e=>setField('eyebrow',e.target.value)} placeholder="e.g. FOREST ECO RESORT — RAJENDRAPUR, GAZIPUR"/></label><label>Display order (0, 1, 2)<input type="number" min="0" max="2" value={edit.sortOrder} onChange={e=>setEdit({...edit,sortOrder:Number(e.target.value)})}/></label></div>
+   <label>Headline (big title)<textarea rows={2} value={edit.data.headline||''} onChange={e=>setField('headline',e.target.value)} placeholder="e.g. Where Nature Becomes an Experience."/></label>
+   <label>Description (short sentence under headline)<textarea rows={3} value={edit.data.description||''} onChange={e=>setField('description',e.target.value)} placeholder="A short line shown under the headline."/></label>
+   <h3 style={{marginTop:'20px'}}>Visibility</h3>
+   <label>Status<select value={edit.status} onChange={e=>setEdit({...edit,status:e.target.value})}>{['Draft','Published'].map(s=><option key={s}>{s}</option>)}</select></label>
+   <input type="hidden" value={edit.title} onChange={e=>setEdit({...edit,title:e.target.value})}/>
    <div className="editor-actions"><button className="admin-primary" disabled={busy} onClick={save}>Save slide</button><button onClick={()=>setEdit(null)}>Cancel</button></div>
   </section>}
  </>;
 }
 
+const GALLERY_CATEGORIES=['Nature','Architecture','Villas','Experience','Masterplan','Lifestyle'];
 function GalleryManager({rows,canEdit,busy,api,run,reload,setNotice,query,setQuery}:ManagerProps&{query:string;setQuery:(s:string)=>void}){
  const [edit,setEdit]=useState<Row|null>(null);
  const [category,setCategory]=useState('');
  const categories=Array.from(new Set(rows.map(r=>r.data.category||'Nature')));
- const filtered=rows.filter(r=>(!category||(r.data.category||'Nature')===category)&&(!query||r.title.toLowerCase().includes(query.toLowerCase())||(r.data.alt||'').toLowerCase().includes(query.toLowerCase())));
- const openNew=()=>setEdit({kind:'gallery',slug:'',title:'',status:'Published',sortOrder:rows.length,data:{...defaults.gallery}});
- const save=()=>run(async()=>{if(!edit)return;const slug=edit.slug||slugify(edit.title||'photo-'+Date.now());const {id,...payload}=edit;await api(id?'/admin/content/'+id:'/admin/content',id?'PUT':'POST',{kind:'gallery',slug,title:payload.title||'Untitled',status:payload.status,sortOrder:payload.sortOrder,data:payload.data});setEdit(null);setNotice('Gallery item saved.');await reload()});
- const remove=(r:Row)=>{if(!confirm(`Delete "${r.title}" from the gallery?`))return;run(async()=>{await api('/admin/content/'+r.id,'PUT',{kind:'gallery',slug:r.slug,title:r.title,status:'Archived',sortOrder:r.sortOrder,data:r.data});setNotice('Gallery item archived.');await reload()})};
+ const filtered=rows.filter(r=>(!category||(r.data.category||'Nature')===category)&&(!query||r.title.toLowerCase().includes(query.toLowerCase())));
+ const openNew=()=>setEdit({kind:'gallery',slug:'',title:'',status:'Published',sortOrder:rows.length,data:{image:'',category:'Nature'}});
+ const save=()=>run(async()=>{if(!edit)return;const title=edit.title.trim();if(!title){alert('Please add a title.');return}if(!edit.data.image){alert('Please upload an image.');return}const slug=edit.slug||slugify(title+'-'+Date.now().toString(36));const {id,...payload}=edit;await api(id?'/admin/content/'+id:'/admin/content',id?'PUT':'POST',{kind:'gallery',slug,title,status:'Published',sortOrder:payload.sortOrder,data:{image:payload.data.image,category:payload.data.category||'Nature',alt:title}});setEdit(null);setNotice('Gallery photo saved.');await reload()});
+ const remove=(r:Row)=>{if(!confirm(`Delete "${r.title}" from the gallery permanently?`))return;run(async()=>{await api('/admin/content/'+r.id,'DELETE');setNotice('Gallery photo deleted.');await reload()})};
  const setField=(key:string,value:any)=>setEdit(e=>e?{...e,data:{...e.data,[key]:value}}:e);
  return <>
   <section className="admin-panel">
    <div className="panel-title" style={{alignItems:'center'}}>
-    <div><h2 style={{marginBottom:'4px'}}>Public gallery</h2><p className="caption" style={{margin:0}}>Photos shown on the <a href="/gallery" target="_blank" rel="noreferrer">/gallery</a> page. Visitors can filter by category and click to open a lightbox.</p></div>
+    <div><h2 style={{marginBottom:'4px'}}>Public gallery</h2><p className="caption" style={{margin:0}}>Photos shown on the <a href="/gallery" target="_blank" rel="noreferrer">/gallery</a> page. Visitors can filter by category and open any photo in a lightbox.</p></div>
     {canEdit&&<button className="admin-primary" onClick={openNew}><Plus size={16}/> Add photo</button>}
    </div>
-   <div className="admin-filters"><label>Search title or alt text<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search…"/></label><label>Category<select value={category} onChange={e=>setCategory(e.target.value)}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label></div>
+   <div className="admin-filters"><label>Search title<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search…"/></label><label>Category<select value={category} onChange={e=>setCategory(e.target.value)}><option value="">All categories</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label></div>
    {!filtered.length&&<Empty text="No gallery items yet. Add your first photo to populate the public gallery."/>}
    <div className="gallery-admin-grid">
     {filtered.map(r=><article className="gallery-card" key={r.id}>
-     <div className="gallery-card-media">{r.data.image?<img src={r.data.image} alt={r.data.alt||r.title}/>:<div className="slider-card-empty"><ImageIcon size={28}/></div>}</div>
+     <div className="gallery-card-media">{r.data.image?<img src={r.data.image} alt={r.title}/>:<div className="slider-card-empty"><ImageIcon size={28}/></div>}</div>
      <strong>{r.title}</strong>
-     <small>{r.data.category||'Nature'} · {r.data.assetType||'Photograph'}</small>
-     <div className="slider-card-tags"><span className="badge">{r.status}</span></div>
-     {canEdit&&<div className="slider-card-actions"><button onClick={()=>setEdit({...r,data:{...defaults.gallery,...r.data}})}>Edit</button><button className="danger" onClick={()=>remove(r)}><Trash2 size={13}/> Delete</button></div>}
+     <small>{r.data.category||'Nature'}</small>
+     {canEdit&&<div className="slider-card-actions"><button onClick={()=>setEdit({...r,data:{image:r.data.image||'',category:r.data.category||'Nature'}})}>Edit</button><button className="danger" onClick={()=>remove(r)}><Trash2 size={13}/> Delete</button></div>}
     </article>)}
    </div>
   </section>
   {edit&&<section className="admin-panel content-editor">
    <div className="panel-title"><h2>{edit.id?'Edit photo':'New photo'}</h2><button onClick={()=>setEdit(null)}>Close</button></div>
-   <div className="form-grid"><label>Title / caption<input value={edit.title} onChange={e=>setEdit({...edit,title:e.target.value})}/></label><label>Category<select value={edit.data.category||'Nature'} onChange={e=>setField('category',e.target.value)}>{['Nature','Architecture','Villas','Experience','Masterplan','Lifestyle'].map(c=><option key={c}>{c}</option>)}</select></label><label>Asset type<select value={edit.data.assetType||'Photograph'} onChange={e=>setField('assetType',e.target.value)}>{['Photograph','Render','Concept image','Illustration'].map(s=><option key={s}>{s}</option>)}</select></label><label>Display order<input type="number" min="0" value={edit.sortOrder} onChange={e=>setEdit({...edit,sortOrder:Number(e.target.value)})}/></label><label>Status<select value={edit.status} onChange={e=>setEdit({...edit,status:e.target.value})}>{['Draft','Published','Archived'].map(s=><option key={s}>{s}</option>)}</select></label></div>
-   <label>Alt text (for accessibility)<input value={edit.data.alt||''} onChange={e=>setField('alt',e.target.value)} maxLength={500}/></label>
-   <label>Caption (optional)<input value={edit.data.caption||''} onChange={e=>setField('caption',e.target.value)}/></label>
-   <h3 style={{marginTop:'20px'}}>Photo</h3>
-   <MediaField name="image" value={edit.data.image||''} onChange={v=>setField('image',v)} kind="image"/>
+   <div className="form-grid"><label>Title<input value={edit.title} onChange={e=>setEdit({...edit,title:e.target.value})} placeholder="e.g. Sunrise over the lake" required/></label><label>Category<select value={edit.data.category||'Nature'} onChange={e=>setField('category',e.target.value)}>{GALLERY_CATEGORIES.map(c=><option key={c}>{c}</option>)}</select></label></div>
+   <MediaField name="image" label="Photo" value={edit.data.image||''} onChange={v=>setField('image',v)} kind="image"/>
    <div className="editor-actions"><button className="admin-primary" disabled={busy} onClick={save}>Save photo</button><button onClick={()=>setEdit(null)}>Cancel</button></div>
   </section>}
  </>;

@@ -116,15 +116,31 @@ app.put('/api/v1/admin/content/:id',contentWrite,async(req,res)=>{
  if(['Published','Scheduled'].includes(data.status)&&data.data.sensitive===true&&(!approved||req.user!.role!=='Super Admin'))return fail(res,403,'Sensitive ownership claims require Super Admin approval.');validateContent(data);
  const item=await db.content.update({where:{id:old.id},data:{...data,data:data.data as Prisma.InputJsonValue,approvedBy:approved&&req.user!.role==='Super Admin'?req.user!.id:null,approvedAt:approved&&req.user!.role==='Super Admin'?new Date():null}});await audit(req.user!.id,'content.updated',item.id,`${old.status} → ${data.status}`);res.json(item);
 });
+app.delete('/api/v1/admin/content/:id',contentWrite,async(req,res)=>{
+ const old=await db.content.findUnique({where:{id:String(req.params.id)}});if(!old)return fail(res,404,'Content not found.');
+ if(old.kind==='masterplan'&&old.status==='Published')return fail(res,409,'Unpublish this phase before deleting it.');
+ await db.content.delete({where:{id:old.id}});await audit(req.user!.id,'content.deleted',old.id,`${old.kind}/${old.slug}`);res.json({ok:true});
+});
 const mediaDir=()=>path.resolve(process.env.MEDIA_DIRECTORY||'./data/media');
-const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:12*1024*1024,files:1}});
+const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:100*1024*1024,files:1}});
+function detectMime(b:Buffer):string|null{
+ if(b.subarray(0,5).toString()==='%PDF-')return 'application/pdf';
+ if(b[0]===0xff&&b[1]===0xd8&&b[2]===0xff)return 'image/jpeg';
+ if(b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))return 'image/png';
+ if(b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP')return 'image/webp';
+ if(b.subarray(4,8).toString()==='ftyp')return 'video/mp4';
+ if(b.subarray(0,4).equals(Buffer.from([0x1a,0x45,0xdf,0xa3])))return 'video/webm';
+ return null;
+}
 app.post('/api/v1/admin/media',contentWrite,upload.single('file'),async(req,res)=>{
  const file=req.file;if(!file)return fail(res,400,'Choose a file.');const b=file.buffer;
- const detected=b.subarray(0,5).toString()==='%PDF-'?'application/pdf':b[0]===0xff&&b[1]===0xd8&&b[2]===0xff?'image/jpeg':b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))?'image/png':b.subarray(0,4).toString()==='RIFF'&&b.subarray(8,12).toString()==='WEBP'?'image/webp':null;
- if(!detected)return fail(res,400,'Only genuine JPEG, PNG, WebP and PDF files are accepted.');
- const fields=z.object({alt:z.string().min(1).max(500),caption:z.string().max(1000).default(''),assetType:z.enum(['Photograph','Render','Concept image','Illustration','Document']),association:z.string().max(200).optional()}).parse(req.body);
+ const detected=detectMime(b);
+ if(!detected)return fail(res,400,'Only JPEG, PNG, WebP, PDF, MP4 or WebM files are accepted.');
+ const fields=z.object({alt:z.string().max(500).default('Uploaded media'),caption:z.string().max(1000).default(''),assetType:z.enum(['Photograph','Render','Concept image','Illustration','Document','Video']).default(detected.startsWith('video/')?'Video':'Photograph'),association:z.string().max(200).optional(),publish:z.union([z.literal('true'),z.literal('false'),z.boolean()]).optional()}).parse(req.body);
+ const status=(fields.publish===true||fields.publish==='true')?'Published':'Draft';
+ const {publish:_,...data}=fields;
  const storageKey=randomBytes(24).toString('hex');await fs.mkdir(mediaDir(),{recursive:true});await fs.writeFile(path.join(mediaDir(),storageKey),b,{flag:'wx'});
- const item=await db.media.create({data:{storageKey,originalName:path.basename(file.originalname),mimeType:detected,size:file.size,...fields}});await audit(req.user!.id,'media.uploaded',item.id);res.status(201).json(item);
+ const item=await db.media.create({data:{storageKey,originalName:path.basename(file.originalname),mimeType:detected,size:file.size,status,...data,alt:data.alt||'Uploaded media'}});await audit(req.user!.id,'media.uploaded',item.id);res.status(201).json({...item,url:`/api/v1/media/${item.id}`});
 });
 app.get('/api/v1/admin/media',contentRead,async(req,res)=>{res.json({items:await db.media.findMany({where:{...(req.query.q?{alt:{contains:String(req.query.q)}}:{}),...(req.query.status?{status:String(req.query.status)}:{})},orderBy:{createdAt:'desc'},take:200})});});
 // Register a cloud-uploaded image (UploadThing URL) in the media library
@@ -132,7 +148,7 @@ app.post('/api/v1/admin/media/cloud',contentWrite,async(req,res)=>{
  const fields=z.object({url:z.string().url().max(2000),name:z.string().max(500).default('upload'),alt:z.string().min(1).max(500),caption:z.string().max(1000).default(''),assetType:z.enum(['Photograph','Render','Concept image','Illustration','Document']).default('Photograph'),size:z.number().int().min(0).default(0),mimeType:z.string().max(100).default('image/jpeg')}).parse(req.body);
  const item=await db.media.create({data:{storageKey:fields.url,originalName:fields.name,mimeType:fields.mimeType,size:fields.size,alt:fields.alt,caption:fields.caption,assetType:fields.assetType}});await audit(req.user!.id,'media.cloud.uploaded',item.id);res.status(201).json(item);
 });
-app.patch('/api/v1/admin/media/:id',contentWrite,async(req,res)=>{const data=z.object({alt:z.string().min(1).max(500).optional(),caption:z.string().max(1000).optional(),status:z.enum(['Draft','Published','Archived']).optional(),assetType:z.enum(['Photograph','Render','Concept image','Illustration','Document']).optional()}).strict().parse(req.body);const item=await db.media.update({where:{id:String(req.params.id)},data});await audit(req.user!.id,'media.updated',item.id);res.json(item);});
+app.patch('/api/v1/admin/media/:id',contentWrite,async(req,res)=>{const data=z.object({alt:z.string().min(1).max(500).optional(),caption:z.string().max(1000).optional(),status:z.enum(['Draft','Published','Archived']).optional(),assetType:z.enum(['Photograph','Render','Concept image','Illustration','Document','Video']).optional()}).strict().parse(req.body);const item=await db.media.update({where:{id:String(req.params.id)},data});await audit(req.user!.id,'media.updated',item.id);res.json(item);});
 app.get('/api/v1/media/:id',async(req,res)=>{const item=await db.media.findUnique({where:{id:String(req.params.id)}});if(!item||item.status!=='Published'&&(!req.user||!['Super Admin','Content Administrator'].includes(req.user.role)))return fail(res,404,'File not found.');if(item.storageKey.startsWith('http'))return res.redirect(302,item.storageKey);res.type(item.mimeType);if(item.mimeType==='application/pdf')res.attachment(item.originalName);res.sendFile(path.join(mediaDir(),item.storageKey));});
 app.get('/api/v1/brochures/:id/download',async(req,res)=>{const c=await db.content.findFirst({where:{id:String(req.params.id),kind:'brochures',status:'Published'}});if(!c)return fail(res,404,'Document unavailable.');const d=c.data as any;if(d.private)return fail(res,404,'Document unavailable.');if(d.expiresAt&&new Date(d.expiresAt)<new Date())return fail(res,410,'This document has expired.');const media=await db.media.findFirst({where:{id:d.mediaId||'',status:'Published',mimeType:'application/pdf'}});if(!media)return fail(res,404,'Approved document file unavailable.');await db.event.create({data:{name:'brochure.downloaded',resource:c.id}});res.type('application/pdf').attachment(media.originalName).sendFile(path.join(mediaDir(),media.storageKey));});
 app.get('/api/v1/admin/staff',leadRead,async(_req,res)=>res.json({items:await db.user.findMany({where:{active:true,role:{in:['Super Admin','Sales Manager','Sales Executive']}},select:{id:true,name:true,role:true}})}));
