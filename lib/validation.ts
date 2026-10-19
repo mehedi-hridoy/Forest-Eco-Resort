@@ -1,7 +1,7 @@
 import { z } from 'zod';
 export const roles = ['Super Admin','Content Administrator','Sales Manager','Sales Executive','Analyst / Viewer'] as const;
 export const statuses = ['New','Contacted','Qualified','Consultation Scheduled','Follow-up Required','Converted','Not Interested','Invalid / Spam'] as const;
-export const kinds = ['pages','sections','navigation','settings','villas','experiences','facilities','masterplan','gallery','sliders','articles','brochures','faqs'] as const;
+export const kinds = ['pages','sections','navigation','settings','villas','experiences','facilities','masterplan','gallery','sliders','popup','articles','brochures','faqs'] as const;
 const text = (max:number) => z.string().trim().max(max).transform(v=>v.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,''));
 export const leadSchema = z.object({
  submissionKey:z.string().uuid(), fullName:text(120).pipe(z.string().min(2,'Please enter your full name.')),

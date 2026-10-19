@@ -4,14 +4,14 @@ import phases from './phases.json';
 const db=new PrismaClient();
 const records:any[]=[...phases];
 const add=(kind:string,slug:string,title:string,data:any,sortOrder=0,status='Published')=>records.push({kind,slug,title,data,sortOrder,status});
-const nav=[['home','Home','/'],['discover','Discover Forest','/discover-forest'],['villas','Villas & Ownership','/villas-ownership'],['masterplan','The Masterplan','/masterplan'],['shareholder-benefits','Shareholder Benefits','/shareholder-benefits'],['facilities','Facilities','/facilities'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
+const nav=[['home','Home','/'],['discover','Discover Forest Eco Resort','/discover-forest'],['villas','Villas & Ownership','/villas-ownership'],['masterplan','The Masterplan','/masterplan'],['shareholder-benefits','Shareholder Benefits','/shareholder-benefits'],['facilities','Facilities','/facilities'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Contact','/contact']];
 nav.forEach(([slug,title,url],i)=>add('navigation',slug,title,{url},i));
 const pages=[
  ['home','Where Nature Becomes an Experience.','A premium destination where nature, luxury, hospitality, adventure and leisure come together in one extraordinary setting.','/images/forest.jpg'],
  ['estate','A new perspective on getting away.','A destination envisioned around the quiet beauty of Bhawal, where thoughtful architecture, hospitality and nature come together.','/images/woods.jpg'],
  ['experience','Find your own rhythm.','Room to slow down. Space to come together. Discover the experiences envisioned for Forest Eco Resort.','/images/forest.jpg'],
  ['villas-ownership','Own a part of the extraordinary.','A private sanctuary shaped by nature. A slower way of living, surrounded by the quiet beauty of Bhawal.','/images/cabin.jpg'],
- ['masterplan','Four phases. One evolving destination.','Forest Eco Resort is envisioned as a phased destination development, bringing together hospitality, nature, recreation, lifestyle and wellness. Each phase introduces a distinct layer of the overall experience.','/images/forest.jpg'],
+ ['masterplan','Four phases. One evolving destination.','Forest Eco Resort is envisioned as a phased destination development, bringing together hospitality, nature, recreation, lifestyle and wellness. Each phase introduces a distinct layer of the overall experience.','/images/masterplan/hero.jpg'],
  ['discover-forest','Discover Forest.','Five projects. One forest. A destination made to return to.','/images/discover/hero.jpg'],
  ['facilities','Explore the facilities.','A considered collection of hospitality, recreation and places to reconnect, filterable across the four phases of the destination.','/images/woods.jpg'],
  ['gallery','A sense of Forest.','An evolving visual collection. Official project photography and approved renders will be added as they become available.','/images/forest.jpg'],
