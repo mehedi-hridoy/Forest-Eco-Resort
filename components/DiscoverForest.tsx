@@ -31,7 +31,7 @@ const PLAYS=[
  {key:'trails',title:'Forest Trails',text:'Shaded paths through preserved groves.',image:`${IMG}/trails.jpg`},
 ];
 
-export default function DiscoverForest({page}:{page:Entry}){
+export default function DiscoverForest({page,facilityCount}:{page:Entry;facilityCount:number}){
  const tagline=page.data.body||'Five projects. One forest. A destination made to return to.';
  const statement=page.data.visionBody||'Not a resort — a destination. Luxury, nature, recreation and family life, sharing one forest address.';
  return <>
@@ -40,7 +40,7 @@ export default function DiscoverForest({page}:{page:Entry}){
    <div className="df-hero-shade"/>
    <div className="df-hero-content">
     <p className="eyebrow">BHAWAL FOREST <span>·</span> GAZIPUR</p>
-    <h1>Discover <em>Forest.</em></h1>
+    <h1>Discover<br/><em>Forest Eco Resort.</em></h1>
     <p className="df-hero-tagline">{tagline}</p>
    </div>
    <a className="df-scroll" href="#destination" aria-label="Scroll to the destination"><ArrowDown size={16}/></a>
@@ -96,6 +96,16 @@ export default function DiscoverForest({page}:{page:Entry}){
    </div>
   </section>
 
+  <Link href="/facilities" className="df-facilities">
+   <div className="df-facilities-count df-reveal"><strong>{facilityCount}</strong><span>facilities</span></div>
+   <div className="df-facilities-copy df-reveal">
+    <p className="eyebrow">EVERYTHING, IN ONE PLACE</p>
+    <h2>Seven ways to<br/><em>spend a day.</em></h2>
+    <ul>{['Stay','Dine','Restore','Play','Explore','Wander','Gather'].map(v=><li key={v}>{v}</li>)}</ul>
+    <span className="df-facilities-cta">Explore all facilities <ArrowUpRight size={18}/></span>
+   </div>
+  </Link>
+
   <section className="df-close">
    <div className="df-close-media df-parallax"><img src={`${IMG}/closing.jpg`} alt="Sunlit leaves" loading="lazy"/></div>
    <div className="df-close-shade"/>
@@ -105,7 +115,7 @@ export default function DiscoverForest({page}:{page:Entry}){
     <p>Villa plans, share details and the development roadmap — shared on request.</p>
     <div className="df-close-actions">
      <Link className="action light" href="/contact?interest=Project%20Information">Request details <ArrowUpRight size={18}/></Link>
-     <Link className="quiet-link" href="/shareholder-benefits">Shareholder benefits <ArrowUpRight size={16}/></Link>
+     <Link className="quiet-link" href="/facilities">All facilities <ArrowUpRight size={16}/></Link>
     </div>
    </div>
   </section>
