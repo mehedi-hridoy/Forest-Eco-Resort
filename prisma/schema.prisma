@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  passwordHash String
+  role String
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  leads Lead[]
+}
+model Session {
+  id String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  csrf String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([expiresAt])
+}
+model PasswordReset {
+  id String @id
+  userId String
+  expiresAt DateTime
+  usedAt DateTime?
+}
+model Lead {
+  id String @id @default(cuid())
+  submissionKey String @unique
+  fullName String
+  mobile String
+  email String
+  interest String
+  villa String?
+  purpose String?
+  contactMethod String
+  contactTime String?
+  message String
+  source String
+  campaign String?
+  consentAt DateTime
+  privacyVersion String @default("2026-10-16")
+  status String @default("New")
+  priority String @default("Normal")
+  assignedTo String?
+  assignee User? @relation(fields: [assignedTo], references: [id])
+  lastContactAt DateTime?
+  followUpAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  activities LeadActivity[]
+  @@index([status,createdAt])
+  @@index([assignedTo,followUpAt])
+}
+model LeadActivity {
+  id String @id @default(cuid())
+  leadId String
+  lead Lead @relation(fields:[leadId],references:[id],onDelete:Cascade)
+  actorId String?
+  kind String
+  text String
+  createdAt DateTime @default(now())
+  @@index([leadId,createdAt])
+}
+model Content {
+  id String @id @default(cuid())
+  kind String
+  slug String
+  title String
+  status String @default("Draft")
+  sortOrder Int @default(0)
+  data Json
+  approvedBy String?
+  approvedAt DateTime?
+  publishAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([kind,slug])
+  @@index([kind,status,sortOrder])
+}
+model Media {
+  id String @id @default(cuid())
+  storageKey String @unique
+  originalName String
+  mimeType String
+  size Int
+  alt String
+  caption String
+  assetType String
+  association String?
+  status String @default("Draft")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Notification {
+  id String @id @default(cuid())
+  leadId String?
+  recipient String
+  subject String
+  body String
+  status String @default("Pending")
+  attempts Int @default(0)
+  lastError String?
+  nextAttemptAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  @@index([status,nextAttemptAt])
+}
+model AuditLog {
+  id String @id @default(cuid())
+  actorId String?
+  action String
+  resourceId String?
+  detail String
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
+model Event {
+  id String @id @default(cuid())
+  name String
+  resource String?
+  createdAt DateTime @default(now())
+}

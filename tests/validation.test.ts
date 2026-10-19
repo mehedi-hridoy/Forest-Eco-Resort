@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {safeUrl,leadSchema} from '../lib/validation';import phases from '../prisma/phases.json';
+test('rejects executable and protocol-relative URLs',()=>{for(const s of ['javascript:alert(1)','//evil.example','data:text/html,hi'])assert.equal(safeUrl(s),'#');assert.equal(safeUrl('/masterplan'),'/masterplan')});
+test('all supplied phases retain Bengali narratives and complete facilities',()=>{assert.equal(phases.length,4);assert.deepEqual(phases.map(p=>p.data.facilities.length),[15,17,16,16]);phases.forEach(p=>{assert.match(p.data.narrative,/[\u0980-\u09ff]/);assert.equal(p.data.landValue,10)})});

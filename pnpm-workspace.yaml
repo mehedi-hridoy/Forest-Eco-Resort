@@ -1,0 +1,10 @@
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  sharp: true
+overrides:
+  motion-dom: 12.23.23
+  motion-utils: 12.23.6

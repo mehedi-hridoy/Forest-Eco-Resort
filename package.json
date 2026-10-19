@@ -1,0 +1,52 @@
+{
+  "name": "forest-eco-resort",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k \"tsx watch server/index.ts\" \"next dev --hostname 0.0.0.0\"",
+    "build": "prisma generate && next build && tsc -p tsconfig.server.json",
+    "start": "concurrently -k \"node dist-server/server/index.js\" \"next start --hostname 0.0.0.0\"",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.0",
+    "@uploadthing/react": "^7.3.3",
+    "bcryptjs": "3.0.2",
+    "cookie-parser": "1.4.7",
+    "dotenv": "17.2.3",
+    "express": "5.1.0",
+    "express-rate-limit": "8.7.1",
+    "framer-motion": "12.23.24",
+    "gsap": "3.13.0",
+    "helmet": "8.1.0",
+    "lucide-react": "0.468.0",
+    "multer": "2.4.0",
+    "next": "15.5.27",
+    "nodemailer": "10.1.1",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
+    "sharp": "^0.35.5",
+    "uploadthing": "^7.7.4",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "2.4.6",
+    "@types/cookie-parser": "1.4.9",
+    "@types/express": "5.0.5",
+    "@types/multer": "2.0.0",
+    "@types/node": "22.19.1",
+    "@types/nodemailer": "7.0.4",
+    "@types/react": "19.1.17",
+    "@types/react-dom": "19.1.11",
+    "@types/supertest": "6.0.3",
+    "concurrently": "9.2.1",
+    "prisma": "6.19.0",
+    "supertest": "7.1.4",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}

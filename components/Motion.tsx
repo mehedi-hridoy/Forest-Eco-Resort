@@ -1,0 +1,4 @@
+'use client';
+import {useEffect} from 'react';
+import {usePathname} from 'next/navigation';
+export default function Motion(){const pathname=usePathname();useEffect(()=>{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;let ctx:any;let cancelled=false;Promise.all([import('gsap'),import('gsap/ScrollTrigger')]).then(([g,s])=>{if(cancelled)return;g.gsap.registerPlugin(s.ScrollTrigger);ctx=g.gsap.context(()=>{g.gsap.to('.hero .picture img',{yPercent:10,scale:1.05,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});g.gsap.utils.toArray<HTMLElement>('.editorial-copy,.phase-copy').forEach(el=>{g.gsap.from(el,{y:20,duration:0.7,scrollTrigger:{trigger:el,start:'top 94%',once:true}})});});});return()=>{cancelled=true;ctx?.revert();}},[pathname]);return null;}
