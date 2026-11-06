@@ -54,7 +54,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
      p.data.landValue>0&&{icon:LandPlot,value:<>{p.data.landValue}</>,label:`${p.data.landUnit||'Bigha'} of land`},
      p.data.areaValue>0&&{icon:Ruler,value:<>{lakh(p.data.areaValue)}</>,label:`${p.data.areaUnit||'SFT'} development`},
      p.data.costValue>0&&{icon:Banknote,value:<><span className="mp-cur">৳</span>{(p.data.costValue/10000000).toLocaleString('en-IN',{maximumFractionDigits:0})} crore</>,label:'Indicative investment'},
-     {icon:LayoutGrid,value:<>{facilities.length}</>,label:'Planned facilities'},
+     {icon:LayoutGrid,value:<>100+</>,label:'Planned facilities'},
     ].filter(Boolean) as {icon:typeof LandPlot;value:React.ReactNode;label:string}[];
     return <article key={p.id} id={`phase-${i+1}`} data-phase className={`mp-stop ${i%2?'mp-stop-flip':''}`}>
      <span className="mp-node" aria-hidden="true"><span>{ROMAN[i]||i+1}</span></span>

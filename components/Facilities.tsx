@@ -45,7 +45,7 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
    <div className="fx-hero-inner">
     <Link href="/discover-forest" className="fx-back"><ArrowLeft size={15}/> Discover Forest Eco Resort</Link>
     <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:1.2,ease:EASE}}>
-     <p className="fx-count"><CountUp to={items.length}/></p>
+     <p className="fx-count"><CountUp to={100}/>+</p>
      <h1>facilities,<br/><em>seven ways to spend a day.</em></h1>
     </motion.div>
     <motion.ul className="fx-verbs" initial="hide" animate="show" variants={{show:{transition:{staggerChildren:.08,delayChildren:.6}}}}>
@@ -60,10 +60,10 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
     <span className="fx-world-shade"/>
     <span className="fx-world-tab">{w.verb}</span>
     <span className="fx-world-body">
-     <span className="fx-world-n">{String(w.count).padStart(2,'0')}</span>
+     <span className="fx-world-n">{String(i+1).padStart(2,'0')}</span>
      <strong>{w.verb}</strong>
      <small>{w.line}</small>
-     <em>View {w.count} facilities <ArrowUpRight size={14}/></em>
+     <em>View facilities <ArrowUpRight size={14}/></em>
     </span>
    </button>)}
   </section>
@@ -71,8 +71,8 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
   <section className="fx-explorer" ref={explorer}>
    <div className="fx-toolbar">
     <div className="fx-chips" role="tablist" aria-label="Filter by world">
-     <button role="tab" aria-selected={world==='All'} onClick={()=>setWorld('All')}>All <i>{items.length}</i></button>
-     {worlds.map(w=><button key={w.key} role="tab" aria-selected={world===w.key} onClick={()=>setWorld(w.key)}>{w.verb} <i>{w.count}</i></button>)}
+     <button role="tab" aria-selected={world==='All'} onClick={()=>setWorld('All')}>All</button>
+     {worlds.map(w=><button key={w.key} role="tab" aria-selected={world===w.key} onClick={()=>setWorld(w.key)}>{w.verb}</button>)}
     </div>
     <div className="fx-tools">
      <div className="fx-phases" role="group" aria-label="Filter by phase">
@@ -83,8 +83,8 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
     </div>
    </div>
    <div className="fx-status">
-    <strong>{results.length}</strong>
-    <span>{world==='All'?'facilities':verbOf(world).toLowerCase()+' facilities'}{phase?` · Phase ${ROMAN[phase-1]}`:''}</span>
+    <strong>{phase?`Phase ${ROMAN[phase-1]||phase}`:'Highlights'}</strong>
+    <span>{world==='All'?'A selection from 100+ planned facilities':`A selection of planned ${verbOf(world).toLowerCase()} facilities`}</span>
    </div>
    <motion.ul className="fx-grid" layout>
     <AnimatePresence mode="popLayout" initial={false}>
@@ -108,8 +108,7 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
      <Link href={`/masterplan#phase-${p.phase}`} className="fx-phase-col">
       <span className="fx-phase-roman">{ROMAN[p.phase-1]||p.phase}</span>
       <small className="fx-phase-name">{phaseTitles[p.phase]}</small>
-      <strong>+{p.count}</strong>
-      <ul>{p.mix.slice(0,3).map(m=><li key={m.verb}><span>{m.verb}</span><i>{m.n}</i></li>)}</ul>
+      <ul>{p.mix.slice(0,3).map(m=><li key={m.verb}><span>{m.verb}</span></li>)}</ul>
      </Link>
     </div>)}
    </div>

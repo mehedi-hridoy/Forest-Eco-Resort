@@ -12,14 +12,14 @@ const FIGURES=[
 ];
 
 const CHAPTERS=[
- {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one mega tourism destination.',image:`${IMG}/destination.jpg`,alt:'Aerial view of a road curving through dense forest',layout:'wide'},
- {n:'02',title:'Nature at its purest',text:'Every plan begins with the green of Bhawal Forest. The trees lead; the buildings follow.',image:`${IMG}/canopy.jpg`,alt:'Mist rising over a forest canopy',layout:'tall'},
- {n:'03',title:'Already underway',text:'Two of the five projects are nearly complete. The first phase of Forest Eco Resort begins now.',image:`${IMG}/underway.jpg`,alt:'A modern residence among trees at dusk',layout:'wide'},
+ {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one mega tourism destination.',image:`${IMG}/pic1.jpeg`,alt:'Open pavilion with sun loungers beside a pool and lawn',layout:'wide'},
+ {n:'02',title:'Nature at its purest',text:'Every plan begins with the green of Bhawal Forest. The trees lead; the buildings follow.',image:`${IMG}/pic2.jpeg`,alt:'Timber walkway through lush tropical greenery',layout:'tall'},
+ {n:'03',title:'Already underway',text:'Two of the five projects are nearly complete. The first phase of Forest Eco Resort begins now.',image:`${IMG}/pic3.jpg`,alt:'Garden villa with a plunge pool lit at dusk',layout:'wide'},
 ];
 
 const STAYS=[
- {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:'/images/villas/private.jpg'},
- {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:'/images/villas/duplex.jpg'},
+ {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:'/images/discover/private_villa.jpeg'},
+ {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:'/images/discover/duplex_villa.jpg'},
  {title:'Five-Star Lodge',text:'Nine storeys, crowned by an infinity pool.',image:`${IMG}/lodge.jpg`},
  {title:'Luxury Guest House',text:'Six storeys, boutique in spirit.',image:`${IMG}/guest-house.jpg`},
 ];
@@ -97,7 +97,7 @@ export default function DiscoverForest({page,facilityCount}:{page:Entry;facility
   </section>
 
   <Link href="/facilities" className="df-facilities">
-   <div className="df-facilities-count df-reveal"><strong>{facilityCount}</strong><span>facilities</span></div>
+   <div className="df-facilities-count df-reveal"><strong>100+</strong><span>facilities</span></div>
    <div className="df-facilities-copy df-reveal">
     <p className="eyebrow">EVERYTHING, IN ONE PLACE</p>
     <h2>Seven ways to<br/><em>spend a day.</em></h2>

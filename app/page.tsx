@@ -28,9 +28,9 @@ const VALUES=[
  {icon:Leaf,title:'Build enduring value',text:'Development that protects the forest it depends on — sustainable by intent, not by slogan.'},
 ];
 const CHAPTERS=[
- {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one destination.',image:'/images/discover/destination.jpg'},
- {n:'02',title:'Nature leads',text:'Every plan begins with the green of Bhawal. The trees lead; the buildings follow.',image:'/images/discover/canopy.jpg'},
- {n:'03',title:'Already underway',text:'Two of the five projects are nearing completion. Phase one begins now.',image:'/images/discover/underway.jpg'},
+ {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one destination.',image:'/images/discover/pic1.jpeg'},
+ {n:'02',title:'Nature leads',text:'Every plan begins with the green of Bhawal. The trees lead; the buildings follow.',image:'/images/discover/pic2.jpeg'},
+ {n:'03',title:'Already underway',text:'Two of the five projects are nearing completion. Phase one begins now.',image:'/images/discover/pic3.jpg'},
 ];
 const MARQUEE=[
  ['/images/home/huts.jpg','Thatched retreats in a tropical garden'],['/images/villas/retreat.jpg','A pool among palms and forest'],['/images/masterplan/phase-4.jpg','Water courts and palms'],['/images/facilities/dining.jpg','Dining by the water'],['/images/discover/trails.jpg','A forest trail at golden hour'],
@@ -65,7 +65,7 @@ export default async function Home(){
    <p className="hm-eyebrow"><span/>{(intro?.data.eyebrow||'THE FOREST WAY OF LIFE').toUpperCase()}</p>
    <p className="hm-statement hm-words"><Words text={statement}/></p>
    <div className="hm-manifesto-foot">
-    <div className="hm-manifesto-img hm-clip"><img src="/images/discover/closing.jpg" alt="Sunlight through young leaves" loading="lazy" data-speed="6"/></div>
+    <div className="hm-manifesto-img hm-clip"><img src="/images/home/jungle-canopy.jpg" alt="Luxury villa beneath the jungle canopy at dusk" loading="lazy" data-speed="6"/></div>
     <div className="hm-rise">
      <h2>{intro?.title||'A destination shaped by nature.'}</h2>
      {introRest&&<p>{introRest}</p>}
@@ -115,7 +115,7 @@ export default async function Home(){
     <div><strong data-count="5" data-pad="2">05</strong><span>Projects in one destination</span></div>
     <div><strong data-count="2" data-pad="2">02</strong><span>Nearing completion</span></div>
     <div><strong data-count={phases.length} data-pad="2">{pad(phases.length)}</strong><span>Phases of development</span></div>
-    <div><strong data-count={facilities.length}>{facilities.length}</strong><span>Planned facilities</span></div>
+    <div><strong data-count="100" data-suffix="+">100+</strong><span>Planned facilities</span></div>
    </div>
    <div className="hd-chapters">
     {CHAPTERS.map((c,i)=><article key={c.n} className={`hd-chapter hd-chapter-${i}`}>
@@ -234,7 +234,7 @@ export default async function Home(){
 
   {/* Closing */}
   <section className="hc">
-   <div className="hc-media"><img src="/images/home/hero.jpg" alt="" loading="lazy" data-speed="8"/></div>
+   <div className="hc-media"><img src="/images/home/resort-bar.jpg" alt="" loading="lazy" data-speed="8"/></div>
    <div className="hc-shade"/>
    <div className="hc-content hm-rise">
     <p className="hm-eyebrow hm-eyebrow-light"><span/>A PLACE TO BEGIN AGAIN</p>

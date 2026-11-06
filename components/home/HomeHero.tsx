@@ -47,6 +47,6 @@ export default function HomeHero({slides}:{slides:HeroSlide[]}){
   </div>}
 
   <a className="hh-scroll" href="#manifesto" aria-label="Scroll to discover"><span/><ArrowDown size={14}/></a>
-  <p className="hh-side">BHAWAL FOREST · RAJENDRAPUR · GAZIPUR</p>
+  <p className="hh-side">BHABANIPUR · RAJENDRAPUR · GAZIPUR</p>
  </section>;
 }

@@ -350,3 +350,5 @@ a.git-card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px #0e281f
  .hc{min-height:80vh}.hc-content{padding-bottom:80px}
 }
 .footer-group{display:block;margin-bottom:8px;font-size:10px;letter-spacing:.3em;color:#c2a65d}
+
+.fx-status{flex-wrap:wrap;row-gap:6px}

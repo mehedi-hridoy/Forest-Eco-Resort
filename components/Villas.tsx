@@ -7,7 +7,7 @@ import BrochureButton from '@/components/BrochureButton';
 import {facilityIcon} from '@/components/facilityIcons';
 
 const LEGACY=/^\/images\/((forest|woods|cabin|architecture)|discover\/villa-(private|duplex))\.jpg$/;
-const FALLBACK=['/images/villas/private.jpg','/images/villas/duplex.jpg'];
+const FALLBACK=['/images/discover/private_villa.jpeg','/images/discover/duplex_villa.jpg'];
 export const villaImage=(v:Entry,i:number)=>isMediaUrl(v.data.image)&&!LEGACY.test(v.data.image)?v.data.image:FALLBACK[i%FALLBACK.length];
 export const villaFeatures=(v:Entry):string[]=>{const f=Array.isArray(v.data.features)?v.data.features.map((x:string)=>String(x).trim()).filter(Boolean):[];return f.length?f:['Private swimming pool','Forest setting','Registered Sub-Kabala ownership'];};
 export const hasBrochure=(v:Entry)=>!!brochureFor(v.slug,v.data);
@@ -16,7 +16,7 @@ const STEPS=[['Enquire','Share your interest with the team.'],['Converse','A pri
 
 export default function Villas({page,villas,faqs,statements}:{page:Entry;villas:Entry[];faqs:Entry[];statements:Entry[]}){
  const title=page.title==='Own a part of the extraordinary.'?<>Own a part of<br/><em>the extraordinary.</em></>:page.title;
- const heroImage=isMediaUrl(page.data.image)&&!LEGACY.test(page.data.image)?page.data.image:'/images/villas/hero.jpg';
+ const heroImage=isMediaUrl(page.data.image)&&!LEGACY.test(page.data.image)&&page.data.image!=='/images/villas/hero.jpg'?page.data.image:'/images/villas/twilight-forest.jpg';
  return <>
   <section className="vo-hero">
    <div className="vo-hero-media df-parallax"><img src={heroImage} alt="Private pool villas set within the forest canopy" fetchPriority="high"/></div>

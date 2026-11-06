@@ -7,3 +7,5 @@ dist-server/
 prisma/*.db*
 data/
 *.tsbuildinfo
+.vercel
+.env*
