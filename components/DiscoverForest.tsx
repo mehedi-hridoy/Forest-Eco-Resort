@@ -12,31 +12,31 @@ const FIGURES=[
 ];
 
 const CHAPTERS=[
- {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one mega tourism destination.',image:`${IMG}/pic1.jpeg`,alt:'Open pavilion with sun loungers beside a pool and lawn',layout:'wide'},
- {n:'02',title:'Nature at its purest',text:'Every plan begins with the green of Bhawal Forest. The trees lead; the buildings follow.',image:`${IMG}/pic2.jpeg`,alt:'Timber walkway through lush tropical greenery',layout:'tall'},
- {n:'03',title:'Already underway',text:'Two of the five projects are nearly complete. The first phase of Forest Eco Resort begins now.',image:`${IMG}/pic3.jpg`,alt:'Garden villa with a plunge pool lit at dusk',layout:'wide'},
+ {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one mega tourism destination.',image:'/images/story/more-than-a-resort.jpg',alt:'Open pavilion with sun loungers beside a pool and lawn',layout:'wide'},
+ {n:'02',title:'Nature at its purest',text:'Every plan begins with the green of Bhawal Forest. The trees lead; the buildings follow.',image:'/images/story/nature-leads.jpg',alt:'Timber walkway through lush tropical greenery',layout:'tall'},
+ {n:'03',title:'Already underway',text:'Two of the five projects are nearly complete. The first phase of Forest Eco Resort begins now.',image:'/images/story/already-underway.jpg',alt:'Garden villa with a plunge pool lit at dusk',layout:'wide'},
 ];
 
 const STAYS=[
- {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:'/images/discover/private_villa.jpeg'},
- {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:'/images/discover/duplex_villa.jpg'},
- {title:'Five-Star Lodge',text:'Nine storeys, crowned by an infinity pool.',image:`${IMG}/lodge.jpg`},
- {title:'Luxury Guest House',text:'Six storeys, boutique in spirit.',image:`${IMG}/guest-house.jpg`},
+ {title:'Private Pool Villas',text:'Standalone and private, with a pool of your own.',image:'/images/villas/private-villa.jpg'},
+ {title:'Duplex Pool Villas',text:'Two storeys and a private pool, made for family.',image:'/images/villas/duplex-villa.jpg'},
+ {title:'Five-Star Lodge',text:'Nine storeys, crowned by an infinity pool.',image:'/images/discover/five-star-lodge.jpg'},
+ {title:'Luxury Guest House',text:'Six storeys, boutique in spirit.',image:'/images/discover/luxury-guest-house.jpg'},
 ];
 
 const PLAYS=[
  {key:'water',title:'Water Park',text:'Slides, pools and long family afternoons.',image:`${IMG}/water-park.jpg`},
  {key:'golf',title:'Golf Recreation',text:'A practice range and greens among the trees.',image:`${IMG}/golf.jpg`},
- {key:'cable',title:'Cable Car',text:'The long view, above the treetops.',image:`${IMG}/cable-car.jpg`},
- {key:'trails',title:'Forest Trails',text:'Shaded paths through preserved groves.',image:`${IMG}/trails.jpg`},
+ {key:'cable',title:'Cable Car',text:'The long view, above the treetops.',image:'/images/discover/cable-car.jpg'},
+ {key:'trails',title:'Forest Trails',text:'Shaded paths through preserved groves.',image:'/images/banners/jungle-villa-dusk.jpg'},
 ];
 
-export default function DiscoverForest({page,facilityCount}:{page:Entry;facilityCount:number}){
+export default function DiscoverForest({page}:{page:Entry}){
  const tagline=page.data.body||'Five projects. One forest. A destination made to return to.';
  const statement=page.data.visionBody||'Not a resort — a destination. Luxury, nature, recreation and family life, sharing one forest address.';
  return <>
   <section className="df-hero">
-   <div className="df-hero-media df-parallax"><img src={`${IMG}/hero.jpg`} alt="Sunlight through tall forest trunks" fetchPriority="high"/></div>
+   <div className="df-hero-media df-parallax"><img src="/images/banners/jungle-villa-dusk.jpg" alt="A villa in the jungle at dusk" fetchPriority="high"/></div>
    <div className="df-hero-shade"/>
    <div className="df-hero-content">
     <p className="eyebrow">BHAWAL FOREST <span>·</span> GAZIPUR</p>
@@ -79,7 +79,7 @@ export default function DiscoverForest({page,facilityCount}:{page:Entry;facility
   </section>
 
   <section className="df-interlude">
-   <div className="df-interlude-media df-parallax"><img src={`${IMG}/river.jpg`} alt="A quiet river between forested banks" loading="lazy"/></div>
+   <div className="df-interlude-media df-parallax"><img src="/images/discover/tropical-bungalow-pool.jpg" alt="Tropical bungalow beside a pool" loading="lazy"/></div>
    <p className="df-reveal">Walk beneath the canopy.<br/><em>Glide above it.</em></p>
   </section>
 

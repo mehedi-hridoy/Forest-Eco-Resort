@@ -3,7 +3,7 @@ import type {Entry} from './content';
 
 // Curated imagery for the seeded experiences. The original seed pointed at alpine stock photos that do not
 // read as Bhawal forest, so those legacy paths are swapped out; anything uploaded in the admin is kept as-is.
-const CURATED:Record<string,string>={stay:'/images/discover/stay.jpeg',dine:'/images/discover/dine.jpg',explore:'/images/discover/explore.jpg',reconnect:'/images/discover/reconnect.jpg',celebrate:'/images/discover/celebrate.jpeg',unwind:'/images/discover/unwind.jpg'};
+const CURATED:Record<string,string>={stay:'/images/experiences/stay.jpg',dine:'/images/experiences/dine.jpg',explore:'/images/experiences/explore.jpg',reconnect:'/images/experiences/reconnect.jpg',celebrate:'/images/experiences/celebrate.jpg',unwind:'/images/experiences/unwind.jpg'};
 const LEGACY=/^\/images\/(forest|woods|cabin|architecture)\.jpg$/;
 const FALLBACK=Object.values(CURATED);
 

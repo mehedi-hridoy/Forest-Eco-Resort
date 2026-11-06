@@ -352,3 +352,26 @@ a.git-card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px #0e281f
 .footer-group{display:block;margin-bottom:8px;font-size:10px;letter-spacing:.3em;color:#c2a65d}
 
 .fx-status{flex-wrap:wrap;row-gap:6px}
+
+/* Masterplan: site plan */
+.mp-plan{background:#ecefe6;padding:110px 7vw}
+.mp-plan-head{display:grid;grid-template-columns:1fr minmax(0,440px);gap:40px;align-items:end;margin-bottom:44px}
+.mp-plan-head .eyebrow{color:#7d8a77}
+.mp-plan-head h2{font-size:clamp(36px,4.4vw,64px);line-height:1;letter-spacing:-.05em;margin:0;color:var(--forest)}
+.mp-plan-head>p{margin:0;color:#5b6857}
+.mp-plan-frame{position:relative;display:block;background:#fff;border:1px solid var(--line);border-radius:6px;padding:clamp(10px,2vw,28px);overflow:hidden;box-shadow:0 30px 60px -40px rgba(14,40,31,.45)}
+.mp-plan-frame img{display:block;width:100%;height:auto;transition:transform .6s ease}
+.mp-plan-frame:hover img{transform:scale(1.015)}
+.mp-plan-zoom{position:absolute;right:18px;bottom:18px;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:rgba(14,40,31,.88);color:var(--ivory);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.mp-plan-actions{display:flex;align-items:baseline;gap:40px;margin-top:36px;flex-wrap:wrap}
+.mp-plan .mp-disclaimer{margin-top:28px}
+@media(max-width:820px){.mp-plan{padding:70px 6vw}.mp-plan-head{grid-template-columns:1fr;gap:18px;margin-bottom:28px}.mp-plan-zoom{right:10px;bottom:10px;padding:7px 11px;font-size:10px}.mp-plan-actions{gap:22px}}
+
+/* Gallery grid (masonry) */
+.gx-grid{columns:3;column-gap:22px}
+.gx-item{display:block;width:100%;padding:0;margin:0 0 22px;break-inside:avoid;text-align:left;cursor:zoom-in}
+.gx-item img{display:block;width:100%;height:auto;border-radius:4px;background:#e3e7dc;transition:transform .5s ease,filter .5s ease}
+.gx-item:hover img{transform:scale(1.012);filter:brightness(1.04)}
+.gx-item span{display:block;padding:10px 2px 0;font-size:11px;letter-spacing:.06em;color:#5b6857}
+@media(max-width:900px){.gx-grid{columns:2;column-gap:14px}.gx-item{margin-bottom:14px}.gx-item span{font-size:10px}}
+@media(max-width:480px){.gx-grid{columns:1}}

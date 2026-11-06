@@ -9,3 +9,6 @@ data/
 *.tsbuildinfo
 .vercel
 .env*
+
+# Full-size source images (optimized copies live in public/images)
+originals/

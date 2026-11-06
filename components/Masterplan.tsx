@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import {ArrowUpRight,LandPlot,Ruler,Banknote,LayoutGrid} from 'lucide-react';
+import {ArrowUpRight,LandPlot,Ruler,Banknote,LayoutGrid,Download,Maximize2} from 'lucide-react';
 import type {Entry} from '@/lib/content';
 import {isMediaUrl} from '@/lib/validation';
 import {PhaseProgress} from '@/components/Explorers';
 import {facilityIcon} from '@/components/facilityIcons';
 
 const FALLBACK_IMAGES=['/images/masterplan/phase-1.jpg','/images/masterplan/phase-2.jpg','/images/masterplan/phase-3.jpg','/images/masterplan/phase-4.jpg'];
+const PLAN_PDF='/brochures/forest-eco-resort-masterplan.pdf';
 const ROMAN=['I','II','III','IV','V','VI','VII','VIII'];
 const lakh=(sft:number)=>`${(sft/100000).toLocaleString('en-IN',{maximumFractionDigits:1})} lakh`;
 const pad=(n:number)=>String(n).padStart(2,'0');
@@ -38,6 +39,25 @@ export default function Masterplan({phases}:{phases:Entry[]}){
     </li>)}
    </ol>
    <p className="mp-disclaimer">Development vision supplied by the project owner. Areas are planning targets; timelines and final specifications are subject to approvals.</p>
+  </section>
+
+  <section className="mp-plan" id="site-plan">
+   <div className="mp-plan-head">
+    <div>
+     <p className="eyebrow">THE SITE PLAN</p>
+     <h2>See the whole <em>destination.</em></h2>
+    </div>
+    <p>The colour master plan shows how every phase sits within the forest site, from the Dhaka–Mymensingh Road entrance to the lakeside villas.</p>
+   </div>
+   <a className="mp-plan-frame" href={PLAN_PDF} target="_blank" rel="noopener" aria-label="Open the full colour master plan (PDF) in a new tab">
+    <img src="/images/masterplan/site-plan.jpg" alt="Colour master plan of Forest Eco Resort showing the site layout, roads, lake and villa clusters" loading="lazy" width={2400} height={1821}/>
+    <span className="mp-plan-zoom"><Maximize2 size={16}/> Open full size</span>
+   </a>
+   <div className="mp-plan-actions">
+    <a className="action" href={PLAN_PDF} target="_blank" rel="noopener">View the master plan <ArrowUpRight size={18}/></a>
+    <a className="quiet-link" href={PLAN_PDF} download="Forest-Eco-Resort-Master-Plan.pdf">Download PDF <Download size={16}/></a>
+   </div>
+   <p className="mp-disclaimer">Colour master plan design, November 2026. Layout is indicative and subject to approvals and final design.</p>
   </section>
 
   <PhaseProgress/>

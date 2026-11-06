@@ -28,9 +28,9 @@ const VALUES=[
  {icon:Leaf,title:'Build enduring value',text:'Development that protects the forest it depends on — sustainable by intent, not by slogan.'},
 ];
 const CHAPTERS=[
- {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one destination.',image:'/images/discover/pic1.jpeg'},
- {n:'02',title:'Nature leads',text:'Every plan begins with the green of Bhawal. The trees lead; the buildings follow.',image:'/images/discover/pic2.jpeg'},
- {n:'03',title:'Already underway',text:'Two of the five projects are nearing completion. Phase one begins now.',image:'/images/discover/pic3.jpg'},
+ {n:'01',title:'More than a resort',text:'Five distinct projects, planned together as one destination.',image:'/images/story/more-than-a-resort.jpg'},
+ {n:'02',title:'Nature leads',text:'Every plan begins with the green of Bhawal. The trees lead; the buildings follow.',image:'/images/story/nature-leads.jpg'},
+ {n:'03',title:'Already underway',text:'Two of the five projects are nearing completion. Phase one begins now.',image:'/images/story/already-underway.jpg'},
 ];
 const MARQUEE=[
  ['/images/home/huts.jpg','Thatched retreats in a tropical garden'],['/images/villas/retreat.jpg','A pool among palms and forest'],['/images/masterplan/phase-4.jpg','Water courts and palms'],['/images/facilities/dining.jpg','Dining by the water'],['/images/discover/trails.jpg','A forest trail at golden hour'],
@@ -40,7 +40,7 @@ const MARQUEE=[
 function Words({text}:{text:string}){return <>{text.split(/\s+/).map((w,i)=><span key={i} className="hm-w">{w} </span>)}</>}
 
 export default async function Home(){
- const [page,sections,experiences,villas,phases,facilities,articles,sliders,popups,settings]=await Promise.all([entry('pages','home'),content('sections'),content('experiences'),content('villas'),content('masterplan'),content('facilities'),content('articles'),content('sliders'),content('popup'),entry('settings','global')]);
+ const [page,sections,experiences,villas,phases,articles,sliders,popups,settings]=await Promise.all([entry('pages','home'),content('sections'),content('experiences'),content('villas'),content('masterplan'),content('articles'),content('sliders'),content('popup'),entry('settings','global')]);
  const popup=popups.find(p=>isMediaUrl(p.data.image));
  const intro=sections.find(s=>s.data.page==='home');
  const introBody=String(intro?.data.body||'Some places invite you to visit. Others invite you to feel differently. In the natural surroundings of Bhawal, Forest Eco Resort is envisioned as a place for peaceful escapes, meaningful experiences and private retreats.');
@@ -234,7 +234,7 @@ export default async function Home(){
 
   {/* Closing */}
   <section className="hc">
-   <div className="hc-media"><img src="/images/home/resort-bar.jpg" alt="" loading="lazy" data-speed="8"/></div>
+   <div className="hc-media"><img src="/images/banners/resort-bar.jpg" alt="" loading="lazy" data-speed="8"/></div>
    <div className="hc-shade"/>
    <div className="hc-content hm-rise">
     <p className="hm-eyebrow hm-eyebrow-light"><span/>A PLACE TO BEGIN AGAIN</p>
