@@ -210,7 +210,7 @@ export default async function Home(){
     </div>)}
    </div>
    <div className="hx-foot">
-    <Link href="/shareholder-benefits" className="hm-pill">See shareholder benefits <i><ArrowUpRight size={18}/></i></Link>
+    <Link href="/shareholder-benefits" className="hm-pill">See ownership benefits <i><ArrowUpRight size={18}/></i></Link>
     <small>Aspirations of the developer. Ownership terms and benefits are confirmed in approved documentation; no return or appreciation is guaranteed.</small>
    </div>
   </section>

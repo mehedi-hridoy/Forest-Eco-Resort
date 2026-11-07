@@ -4,6 +4,7 @@ import {createPortal} from 'react-dom';
 import {Download,X,Check,FileText} from 'lucide-react';
 
 type Done={name:string;mobile:string;url:string|null};
+const BROCHURE_FILENAME='Forest-Eco-Resort-Brochure.pdf';
 
 export default function BrochureButton({villa,title,available,variant='dark'}:{villa:string;title:string;available:boolean;variant?:'dark'|'light'}){
  const [open,setOpen]=useState(false);
@@ -28,7 +29,7 @@ export default function BrochureButton({villa,title,available,variant='dark'}:{v
    const data=await res.json();
    if(!res.ok){const field=data.error?.fields;throw new Error((field&&(field.name?.[0]||field.mobile?.[0]))||data.error?.message||'Something went wrong. Please try again.');}
    setDone({name,mobile,url:data.brochureUrl});
-   if(data.brochureUrl){const a=document.createElement('a');a.href=data.brochureUrl;a.download='';a.rel='noopener';if(!data.brochureUrl.startsWith('/'))a.target='_blank';document.body.appendChild(a);a.click();a.remove();}
+   if(data.brochureUrl){const a=document.createElement('a');a.href=data.brochureUrl;a.download=BROCHURE_FILENAME;a.rel='noopener';if(!data.brochureUrl.startsWith('/'))a.target='_blank';document.body.appendChild(a);a.click();a.remove();}
   }catch(err){setError((err as Error).message)}finally{setBusy(false)}
  };
  return <>
@@ -51,8 +52,8 @@ export default function BrochureButton({villa,title,available,variant='dark'}:{v
     </form>:<div className="brochure-done" role="status">
      <span className="brochure-check"><Check size={26} strokeWidth={1.6}/></span>
      <h3>Thank you, <em>{done.name.split(' ')[0]}.</em></h3>
-     <p>{done.url?`Thank you for showing interest in ${title}. Your brochure is downloading now. Our team will get back to you on ${done.mobile} with more details.`:`Thank you for showing interest in ${title}. Our team will send you the brochure and get back to you on ${done.mobile} with more details.`}</p>
-     {done.url&&<a className="brochure-submit" href={done.url} download target={done.url.startsWith('/')?undefined:'_blank'} rel="noopener"><Download size={16}/> Download again</a>}
+     <p>{done.url?'Thank you for showing interest in Forest Eco Resort. Your brochure is downloading now, and our team will get back to you soon.':'Thank you for showing interest in Forest Eco Resort. Our team will get back to you soon.'}</p>
+     {done.url&&<a className="brochure-submit" href={done.url} download={BROCHURE_FILENAME} target={done.url.startsWith('/')?undefined:'_blank'} rel="noopener"><Download size={16}/> Download again</a>}
      <button type="button" className="brochure-link" onClick={close}>Close</button>
     </div>}
    </div>

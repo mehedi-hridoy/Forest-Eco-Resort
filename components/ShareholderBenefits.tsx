@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type {Entry} from '@/lib/content';
 
 const DEFAULT_BENEFITS=[
- 'An opportunity to become a shareholder in a premium forest eco-resort in Gazipur.',
+ 'An opportunity to become an owner in a premium forest eco-resort in Gazipur.',
  'Legally recognized and transferable ownership through Sub-Kabala (registered deed of conveyance).',
  'Enjoy 3 complimentary days and 2 nights at the resort annually for each share.',
  'Special discounts of up to 50–60% on resort stays and selected facilities throughout the year.',
@@ -17,7 +17,7 @@ const DEFAULT_BENEFITS=[
 
 const ICONS=[Landmark,ScrollText,Calendar,Percent,Hotel,TrendingUp,LineChart,Users,TreePine,Sparkles];
 const SHORT_TITLES=[
- 'Shareholder opportunity',
+ 'Ownership opportunity',
  'Legally secured ownership',
  'Annual complimentary stay',
  'Up to 50–60% discounts',
@@ -41,7 +41,7 @@ export default function ShareholderBenefits({page}:{page:Entry}){
  return <>
   <section className="section benefits-intro">
    <div className="benefits-intro-copy">
-    <p className="eyebrow">SHAREHOLDER BENEFITS</p>
+    <p className="eyebrow">OWNERSHIP BENEFITS</p>
     <h2>Ownership that lives<br/><em>beyond a weekend.</em></h2>
     <p className="wide-copy">{page.data.body||'A Forest Eco Resort share is more than an investment — it is registered ownership, an annual escape into Gazipur, and member access across the NEXCENT GROUP portfolio.'}</p>
    </div>
@@ -52,7 +52,7 @@ export default function ShareholderBenefits({page}:{page:Entry}){
    </div>
   </section>
   <section className="section dark benefits-pillars">
-   <div className="section-heading"><div><p className="eyebrow">THREE PILLARS</p><h2>Why shareholders<br/>stay with us.</h2></div><p>Each share bundles three things most ownership products pick only one of — a secured asset, a repeating retreat, and participation in a growing destination.</p></div>
+   <div className="section-heading"><div><p className="eyebrow">THREE PILLARS</p><h2>Why owners<br/>stay with us.</h2></div><p>Each share bundles three things most ownership products pick only one of — a secured asset, a repeating retreat, and participation in a growing destination.</p></div>
    <div className="pillar-grid">
     {PILLARS.map(p=><article key={p.eyebrow} className="pillar-card">
      <span className="pillar-eyebrow">{p.eyebrow}</span>
@@ -63,7 +63,7 @@ export default function ShareholderBenefits({page}:{page:Entry}){
    </div>
   </section>
   <section className="section benefits-grid-section">
-   <div className="section-heading"><div><p className="eyebrow">THE FULL LIST</p><h2>Ten reasons,<br/>one commitment.</h2></div><p>Each shareholder benefit, exactly as it appears in your approved documentation. Nothing abstract — every line is a right or a service you can plan around.</p></div>
+   <div className="section-heading"><div><p className="eyebrow">THE FULL LIST</p><h2>Ten reasons,<br/>one commitment.</h2></div><p>Each ownership benefit, exactly as it appears in your approved documentation. Nothing abstract — every line is a right or a service you can plan around.</p></div>
    <div className="benefits-grid">
     {benefits.map((text,i)=>{const Icon=ICONS[i%ICONS.length];const title=SHORT_TITLES[i]||`Benefit ${i+1}`;return <article className="benefit-card" key={i}>
      <div className="benefit-head">
@@ -76,14 +76,14 @@ export default function ShareholderBenefits({page}:{page:Entry}){
    </div>
   </section>
   <section className="section benefits-legal">
-   <p className="caption"><strong>Important.</strong> Benefits are subject to the approved shareholder agreement, applicable laws, prevailing market conditions and development progress of the project. Share value appreciation, resort availability and inter-property stays are illustrative possibilities, not guarantees. Request current approved documentation before any commitment.</p>
+   <p className="caption"><strong>Important.</strong> Benefits are subject to the approved ownership agreement, applicable laws, prevailing market conditions and development progress of the project. Share value appreciation, resort availability and inter-property stays are illustrative possibilities, not guarantees. Request current approved documentation before any commitment.</p>
   </section>
   <section className="section inquiry-section benefits-cta">
    <div>
-    <p className="eyebrow">BECOME A SHAREHOLDER</p>
+    <p className="eyebrow">BECOME AN OWNER</p>
     <h2>Request the<br/>full brief.</h2>
-    <p>Our team will share the approved shareholder documentation, the current share structure, and arrange a conversation on how the benefits apply to you.</p>
-    <Link className="action" href="/get-in-touch?interest=Villa%20Ownership">Request shareholder details <ArrowUpRight size={18}/></Link>
+    <p>Our team will share the approved ownership documentation, the current share structure, and arrange a conversation on how the benefits apply to you.</p>
+    <Link className="action" href="/get-in-touch?interest=Villa%20Ownership">Request ownership details <ArrowUpRight size={18}/></Link>
    </div>
    <div className="benefits-cta-highlights">
     <div><strong>One-time investment</strong><p>No recurring membership fees. Ownership is yours.</p></div>
