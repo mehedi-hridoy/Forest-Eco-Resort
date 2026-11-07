@@ -79,8 +79,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
     return <article key={p.id} id={`phase-${i+1}`} data-phase className={`mp-stop ${i%2?'mp-stop-flip':''}`}>
      <span className="mp-node" aria-hidden="true"><span>{ROMAN[i]||i+1}</span></span>
      <figure className="mp-stop-media">
-      <div className="mp-frame"><img src={image(p,i)} alt={`${p.title} — illustrative reference`} loading="lazy"/></div>
-      <figcaption>Illustrative reference</figcaption>
+      <div className="mp-frame"><img src={image(p,i)} alt={p.title} loading="lazy"/></div>
      </figure>
      <div className="mp-stop-copy df-reveal">
       <span className="mp-ghost" aria-hidden="true">{pad(i+1)}</span>

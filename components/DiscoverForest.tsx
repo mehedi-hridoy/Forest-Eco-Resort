@@ -39,7 +39,7 @@ export default function DiscoverForest({page}:{page:Entry}){
    <div className="df-hero-media df-parallax"><img src="/images/banners/jungle-villa-dusk.jpg" alt="A villa in the jungle at dusk" fetchPriority="high"/></div>
    <div className="df-hero-shade"/>
    <div className="df-hero-content">
-    <p className="eyebrow">BHAWAL FOREST <span>·</span> GAZIPUR</p>
+    <p className="eyebrow">FOREST ECO RESORT <span>·</span> GAZIPUR</p>
     <h1>Discover<br/><em>Forest Eco Resort.</em></h1>
     <p className="df-hero-tagline">{tagline}</p>
    </div>

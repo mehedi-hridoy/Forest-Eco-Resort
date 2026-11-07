@@ -137,7 +137,7 @@ export default async function Home(){
      <Link href="/experience" className="hm-link hm-link-light">All experiences <ArrowUpRight size={16}/></Link>
     </div>
     {experiences.map((e,i)=><Link key={e.id} href={`/experience#${e.slug}`} className="he-card">
-     <div className="he-media"><img src={experienceImage(e,i)} alt={`${e.title} — illustrative reference`} loading="lazy"/></div>
+     <div className="he-media"><img src={experienceImage(e,i)} alt={e.title} loading="lazy"/></div>
      <div className="he-copy">
       <span>{pad(i+1)} / {pad(experiences.length)}</span>
       <h3>{e.title}</h3>

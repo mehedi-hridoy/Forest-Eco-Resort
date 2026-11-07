@@ -22,7 +22,7 @@ export default function Villas({page,villas,faqs,statements}:{page:Entry;villas:
    <div className="vo-hero-media df-parallax"><img src={heroImage} alt="Private pool villas set within the forest canopy" fetchPriority="high"/></div>
    <div className="vo-hero-shade"/>
    <div className="vo-hero-content">
-    <p className="eyebrow">VILLAS & OWNERSHIP <span>·</span> BHAWAL FOREST</p>
+    <p className="eyebrow">VILLAS & OWNERSHIP <span>·</span> FOREST ECO RESORT</p>
     <h1>{title}</h1>
     {page.data.body&&<p className="vo-hero-body">{page.data.body}</p>}
     <nav className="vo-hero-index" aria-label="The villas">
@@ -42,7 +42,6 @@ export default function Villas({page,villas,faqs,statements}:{page:Entry;villas:
    {villas.map((v,i)=>{const features=villaFeatures(v);return <article key={v.id} id={v.slug} className={`vo-villa ${i%2?'vo-villa-flip':''}`}>
     <figure className="vo-villa-media df-reveal">
      <div className="vo-frame"><img src={villaImage(v,i)} alt={v.title} loading={i===0?'eager':'lazy'}/></div>
-     <figcaption>{v.data.imageLabel||'Illustrative reference'}</figcaption>
     </figure>
     <div className="vo-villa-copy df-reveal">
      <span className="vo-villa-n">{pad(i+1)} <i>/ {pad(villas.length)}</i></span>
