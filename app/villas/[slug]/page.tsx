@@ -5,9 +5,12 @@ import {content} from '@/lib/content';
 import BrochureButton from '@/components/BrochureButton';
 import {facilityIcon} from '@/components/facilityIcons';
 import {villaImage,villaFeatures,hasBrochure} from '@/components/Villas';
+import Img from '@/components/Img';
 
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const v=(await content('villas')).find(x=>x.slug===slug);return {title:v?.data.seoTitle||v?.title||'Villa',description:v?.data.description,alternates:{canonical:`/villas/${slug}`}};}
 
+// Render each page on first visit, then serve it from cache (refreshed by the layout's revalidate / admin saves).
+export async function generateStaticParams(){return [];}
 export default async function Villa({params}:{params:Promise<{slug:string}>}){
  const {slug}=await params;
  const villas=await content('villas');
@@ -18,7 +21,7 @@ export default async function Villa({params}:{params:Promise<{slug:string}>}){
  const features=villaFeatures(v);
  return <main id="main">
   <section className="vd-hero">
-   <div className="vo-hero-media df-parallax"><img src={villaImage(v,index)} alt={v.title} fetchPriority="high"/></div>
+   <div className="vo-hero-media df-parallax"><Img src={villaImage(v,index)} alt={v.title} fetchPriority="high"/></div>
    <div className="vo-hero-shade"/>
    <div className="vd-hero-content">
     <Link href="/villas-ownership" className="fx-back"><ArrowLeft size={15}/> All villas</Link>
@@ -48,7 +51,7 @@ export default async function Villa({params}:{params:Promise<{slug:string}>}){
   {others.length>0&&<section className="vd-others">
    <p className="eyebrow">ALSO IN THE COLLECTION</p>
    <div>{others.map(o=><Link key={o.id} href={`/villas/${o.slug}`} className="vd-other">
-    <div className="vd-other-media"><img src={villaImage(o,villas.indexOf(o))} alt="" loading="lazy"/></div>
+    <div className="vd-other-media"><Img src={villaImage(o,villas.indexOf(o))} sizes="(max-width: 820px) 100vw, 50vw" alt="" loading="lazy"/></div>
     <span><strong>{o.title}</strong><small>{o.data.description}</small></span>
     <ArrowUpRight size={20}/>
    </Link>)}</div>

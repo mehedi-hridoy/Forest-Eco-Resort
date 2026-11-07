@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {motion,AnimatePresence,MotionConfig,useReducedMotion,useInView,animate} from 'framer-motion';
 import {ArrowUpRight,ArrowLeft,Search,X} from 'lucide-react';
 import {facilityIcon} from '@/components/facilityIcons';
+import Img from '@/components/Img';
 
 export type FacilityItem={id:string;title:string;phase:number;category:string};
 
@@ -41,7 +42,7 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
  const perPhase=phases.map(p=>{const list=items.filter(i=>i.phase===p);const mix=worlds.map(w=>({verb:w.verb,n:list.filter(i=>i.category===w.key).length})).filter(m=>m.n>0).sort((a,b)=>b.n-a.n);return {phase:p,count:list.length,mix};});
  return <MotionConfig reducedMotion="user">
   <section className="fx-hero">
-   <img src="/images/discover/canopy.jpg" alt="" className="fx-hero-bg"/>
+   <Img src="/images/discover/canopy.jpg" alt="" className="fx-hero-bg"/>
    <div className="fx-hero-inner">
     <Link href="/discover-forest" className="fx-back"><ArrowLeft size={15}/> Discover Forest Eco Resort</Link>
     <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:1.2,ease:EASE}}>
@@ -56,7 +57,7 @@ export default function Facilities({items,phaseTitles}:{items:FacilityItem[];pha
 
   <section className="fx-worlds" aria-label="Facility worlds">
    {worlds.map((w,i)=><button key={w.key} className={`fx-world ${open===i?'open':''}`} onMouseEnter={()=>setOpen(i)} onFocus={()=>setOpen(i)} onClick={()=>choose(w.key)}>
-    <img src={w.image} alt="" loading="lazy"/>
+    <Img src={w.image} sizes="(max-width: 820px) 100vw, 34vw" alt="" loading="lazy"/>
     <span className="fx-world-shade"/>
     <span className="fx-world-tab">{w.verb}</span>
     <span className="fx-world-body">

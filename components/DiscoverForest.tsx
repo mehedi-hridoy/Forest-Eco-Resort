@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {ArrowUpRight,ArrowDown} from 'lucide-react';
 import type {Entry} from '@/lib/content';
+import Img from '@/components/Img';
 
 const IMG='/images/discover';
 
@@ -36,7 +37,7 @@ export default function DiscoverForest({page}:{page:Entry}){
  const statement=page.data.visionBody||'Not a resort — a destination. Luxury, nature, recreation and family life, sharing one forest address.';
  return <>
   <section className="df-hero">
-   <div className="df-hero-media df-parallax"><img src="/images/banners/jungle-villa-dusk.jpg" alt="A villa in the jungle at dusk" fetchPriority="high"/></div>
+   <div className="df-hero-media df-parallax"><Img src="/images/banners/jungle-villa-dusk.jpg" alt="A villa in the jungle at dusk" fetchPriority="high"/></div>
    <div className="df-hero-shade"/>
    <div className="df-hero-content">
     <p className="eyebrow">FOREST ECO RESORT <span>·</span> GAZIPUR</p>
@@ -56,7 +57,7 @@ export default function DiscoverForest({page}:{page:Entry}){
 
   <section className="df-chapters">
    {CHAPTERS.map((c,i)=><article key={c.n} className={`df-chapter df-chapter-${c.layout} ${i%2?'df-flip':''}`}>
-    <figure className="df-chapter-media df-parallax"><img src={c.image} alt={c.alt} loading="lazy"/></figure>
+    <figure className="df-chapter-media df-parallax"><Img src={c.image} sizes="(max-width: 820px) 100vw, 34vw" alt={c.alt} loading="lazy"/></figure>
     <div className="df-chapter-copy df-reveal">
      <span className="df-chapter-n">{c.n}</span>
      <h2>{c.title}</h2>
@@ -72,14 +73,14 @@ export default function DiscoverForest({page}:{page:Entry}){
    </header>
    <div className="df-stay-row">
     {STAYS.map(s=><figure key={s.title} className="df-stay-item df-reveal">
-     <div className="df-stay-media"><img src={s.image} alt={s.title} loading="lazy"/></div>
+     <div className="df-stay-media"><Img src={s.image} sizes="(max-width: 820px) 100vw, 26vw" alt={s.title} loading="lazy"/></div>
      <figcaption><strong>{s.title}</strong><span>{s.text}</span></figcaption>
     </figure>)}
    </div>
   </section>
 
   <section className="df-interlude">
-   <div className="df-interlude-media df-parallax"><img src="/images/discover/tropical-bungalow-pool.jpg" alt="Tropical bungalow beside a pool" loading="lazy"/></div>
+   <div className="df-interlude-media df-parallax"><Img src="/images/discover/tropical-bungalow-pool.jpg" alt="Tropical bungalow beside a pool" loading="lazy"/></div>
    <p className="df-reveal">Walk beneath the canopy.<br/><em>Glide above it.</em></p>
   </section>
 
@@ -90,7 +91,7 @@ export default function DiscoverForest({page}:{page:Entry}){
    </header>
    <div className="df-play-grid">
     {PLAYS.map(p=><figure key={p.key} className={`df-play-item df-play-${p.key}`}>
-     <img src={p.image} alt={p.title} loading="lazy"/>
+     <Img src={p.image} sizes="(max-width: 820px) 100vw, 50vw" alt={p.title} loading="lazy"/>
      <figcaption><strong>{p.title}</strong><span>{p.text}</span></figcaption>
     </figure>)}
    </div>
@@ -107,7 +108,7 @@ export default function DiscoverForest({page}:{page:Entry}){
   </Link>
 
   <section className="df-close">
-   <div className="df-close-media df-parallax"><img src={`${IMG}/closing.jpg`} alt="Sunlit leaves" loading="lazy"/></div>
+   <div className="df-close-media df-parallax"><Img src={`${IMG}/closing.jpg`} alt="Sunlit leaves" loading="lazy"/></div>
    <div className="df-close-shade"/>
    <div className="df-close-content df-reveal">
     <p className="eyebrow">A PLACE TO BEGIN AGAIN</p>

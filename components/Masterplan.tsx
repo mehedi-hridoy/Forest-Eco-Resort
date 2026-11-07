@@ -4,6 +4,7 @@ import type {Entry} from '@/lib/content';
 import {isMediaUrl} from '@/lib/validation';
 import {PhaseProgress} from '@/components/Explorers';
 import {facilityIcon} from '@/components/facilityIcons';
+import Img from '@/components/Img';
 
 const FALLBACK_IMAGES=['/images/masterplan/phase-1.jpg','/images/masterplan/phase-2.jpg','/images/masterplan/phase-3.jpg','/images/masterplan/phase-4.jpg'];
 const PLAN_PDF='/brochures/forest-eco-resort-masterplan.pdf';
@@ -31,7 +32,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
     {phases.map((p,i)=><li key={p.id}>
      <a href={`#phase-${i+1}`} className="mp-road-card">
       <span className="mp-road-node">{pad(i+1)}</span>
-      <div className="mp-index-media"><img src={image(p,i)} alt="" loading="lazy"/></div>
+      <div className="mp-index-media"><Img src={image(p,i)} sizes="(max-width: 820px) 100vw, 26vw" alt="" loading="lazy"/></div>
       <span className="mp-index-n">{i===0?'Where it begins':i===phases.length-1?'The destination':'Then'}</span>
       <strong>{p.title}</strong>
       <small>{p.data.concept}</small>
@@ -50,7 +51,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
     <p>The colour master plan shows how every phase sits within the forest site, from the Dhaka–Mymensingh Road entrance to the lakeside villas.</p>
    </div>
    <a className="mp-plan-frame" href={PLAN_PDF} target="_blank" rel="noopener" aria-label="Open the full colour master plan (PDF) in a new tab">
-    <img src="/images/masterplan/site-plan.jpg" alt="Colour master plan of Forest Eco Resort showing the site layout, roads, lake and villa clusters" loading="lazy" width={2400} height={1821}/>
+    <Img src="/images/masterplan/site-plan.jpg" alt="Colour master plan of Forest Eco Resort showing the site layout, roads, lake and villa clusters" loading="lazy" width={2400} height={1821}/>
     <span className="mp-plan-zoom"><Maximize2 size={16}/> Open full size</span>
    </a>
    <div className="mp-plan-actions">
@@ -79,7 +80,7 @@ export default function Masterplan({phases}:{phases:Entry[]}){
     return <article key={p.id} id={`phase-${i+1}`} data-phase className={`mp-stop ${i%2?'mp-stop-flip':''}`}>
      <span className="mp-node" aria-hidden="true"><span>{ROMAN[i]||i+1}</span></span>
      <figure className="mp-stop-media">
-      <div className="mp-frame"><img src={image(p,i)} alt={p.title} loading="lazy"/></div>
+      <div className="mp-frame"><Img src={image(p,i)} sizes="(max-width: 820px) 100vw, 50vw" alt={p.title} loading="lazy"/></div>
      </figure>
      <div className="mp-stop-copy df-reveal">
       <span className="mp-ghost" aria-hidden="true">{pad(i+1)}</span>

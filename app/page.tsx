@@ -8,6 +8,7 @@ import BrochureButton from '@/components/BrochureButton';
 import HomeHero,{type HeroSlide} from '@/components/home/HomeHero';
 import HomeMotion from '@/components/home/HomeMotion';
 import {villaImage,villaFeatures,hasBrochure} from '@/components/Villas';
+import Img from '@/components/Img';
 
 const pad=(n:number)=>String(n).padStart(2,'0');
 
@@ -65,7 +66,7 @@ export default async function Home(){
    <p className="hm-eyebrow"><span/>{(intro?.data.eyebrow||'THE FOREST WAY OF LIFE').toUpperCase()}</p>
    <p className="hm-statement hm-words"><Words text={statement}/></p>
    <div className="hm-manifesto-foot">
-    <div className="hm-manifesto-img hm-clip"><img src="/images/home/jungle-canopy.jpg" alt="Luxury villa beneath the jungle canopy at dusk" loading="lazy" data-speed="6"/></div>
+    <div className="hm-manifesto-img hm-clip"><Img src="/images/home/jungle-canopy.jpg" sizes="(max-width: 820px) 100vw, 50vw" alt="Luxury villa beneath the jungle canopy at dusk" loading="lazy" data-speed="6"/></div>
     <div className="hm-rise">
      <h2>{intro?.title||'A destination shaped by nature.'}</h2>
      {introRest&&<p>{introRest}</p>}
@@ -119,7 +120,7 @@ export default async function Home(){
    </div>
    <div className="hd-chapters">
     {CHAPTERS.map((c,i)=><article key={c.n} className={`hd-chapter hd-chapter-${i}`}>
-     <div className="hd-media hm-clip"><img src={c.image} alt="" loading="lazy" data-speed="5"/></div>
+     <div className="hd-media hm-clip"><Img src={c.image} sizes="(max-width: 820px) 100vw, 34vw" alt="" loading="lazy" data-speed="5"/></div>
      <div className="hd-copy df-reveal"><span>{c.n}</span><h3>{c.title}</h3><p>{c.text}</p></div>
     </article>)}
    </div>
@@ -137,7 +138,7 @@ export default async function Home(){
      <Link href="/experience" className="hm-link hm-link-light">All experiences <ArrowUpRight size={16}/></Link>
     </div>
     {experiences.map((e,i)=><Link key={e.id} href={`/experience#${e.slug}`} className="he-card">
-     <div className="he-media"><img src={experienceImage(e,i)} alt={e.title} loading="lazy"/></div>
+     <div className="he-media"><Img src={experienceImage(e,i)} sizes="(max-width: 820px) 100vw, 34vw" alt={e.title} loading="lazy"/></div>
      <div className="he-copy">
       <span>{pad(i+1)} / {pad(experiences.length)}</span>
       <h3>{e.title}</h3>
@@ -159,7 +160,7 @@ export default async function Home(){
    <div className="hv-grid">
     {villas.map((v,i)=><article key={v.id} className={`hv-card hv-card-${i%2}`}>
      <Link href={`/villas/${v.slug}`} className="hv-media hm-clip">
-      <img src={villaImage(v,i)} alt={v.title} loading="lazy"/>
+      <Img src={villaImage(v,i)} sizes="(max-width: 820px) 100vw, 50vw" alt={v.title} loading="lazy"/>
       <span className="hv-tag">{pad(i+1)} · {v.data.statusLabel||'Proposed villa category'}</span>
      </Link>
      <div className="hv-copy">
@@ -183,11 +184,11 @@ export default async function Home(){
    </div>
    <div className="hp-body">
     <div className="hp-sticky" aria-hidden="true">
-     {phases.map((p,i)=><div key={p.id} className={`hp-frame ${i===0?'is-active':''}`}><img src={isMediaUrl(p.data.image)?p.data.image:'/images/masterplan/hero.jpg'} alt="" loading="lazy"/><span>{p.data.eyebrow||`PHASE ${pad(i+1)}`}</span></div>)}
+     {phases.map((p,i)=><div key={p.id} className={`hp-frame ${i===0?'is-active':''}`}><Img src={isMediaUrl(p.data.image)?p.data.image:'/images/masterplan/hero.jpg'} alt="" loading="lazy"/><span>{p.data.eyebrow||`PHASE ${pad(i+1)}`}</span></div>)}
     </div>
     <ol className="hp-stops">
      {phases.map((p,i)=><li key={p.id} className={`hp-stop ${i===0?'is-active':''}`} data-index={i}>
-      <img className="hp-inline" src={isMediaUrl(p.data.image)?p.data.image:'/images/masterplan/hero.jpg'} alt="" loading="lazy"/>
+      <Img className="hp-inline" sizes="(max-width: 820px) 100vw, 50vw" src={isMediaUrl(p.data.image)?p.data.image:'/images/masterplan/hero.jpg'} alt="" loading="lazy"/>
       <span className="hp-n">{pad(i+1)}</span>
       <p className="hp-concept">{p.data.concept}</p>
       <h3>{p.title}</h3>
@@ -223,7 +224,7 @@ export default async function Home(){
     <Link href="/gallery" className="hm-link">Explore the gallery <ArrowUpRight size={16}/></Link>
    </div>
    {[MARQUEE.slice(0,5),MARQUEE.slice(5)].map((row,r)=><div key={r} className={`hq-row ${r?'hq-row-reverse':''}`}>
-    <div className="hq-track">{[...row,...row].map(([src,alt],i)=><figure key={i} aria-hidden={i>=row.length}><img src={src} alt={i<row.length?alt:''} loading="lazy"/></figure>)}</div>
+    <div className="hq-track">{[...row,...row].map(([src,alt],i)=><figure key={i} aria-hidden={i>=row.length}><Img src={src} sizes="(max-width: 820px) 60vw, 26vw" alt={i<row.length?alt:''} loading="lazy"/></figure>)}</div>
    </div>)}
   </section>
 
@@ -234,7 +235,7 @@ export default async function Home(){
 
   {/* Closing */}
   <section className="hc">
-   <div className="hc-media"><img src="/images/banners/resort-bar.jpg" alt="" loading="lazy" data-speed="8"/></div>
+   <div className="hc-media"><Img src="/images/banners/resort-bar.jpg" alt="" loading="lazy" data-speed="8"/></div>
    <div className="hc-shade"/>
    <div className="hc-content hm-rise">
     <p className="hm-eyebrow hm-eyebrow-light"><span/>A PLACE TO BEGIN AGAIN</p>

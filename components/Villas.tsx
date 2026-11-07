@@ -5,6 +5,7 @@ import {isMediaUrl} from '@/lib/validation';
 import {brochureFor} from '@/lib/villas';
 import BrochureButton from '@/components/BrochureButton';
 import {facilityIcon} from '@/components/facilityIcons';
+import Img from '@/components/Img';
 
 const LEGACY=/^\/images\/((forest|woods|cabin|architecture)|discover\/villa-(private|duplex))\.jpg$/;
 const FALLBACK=['/images/villas/private-villa.jpg','/images/villas/duplex-villa.jpg'];
@@ -19,7 +20,7 @@ export default function Villas({page,villas,faqs,statements}:{page:Entry;villas:
  const heroImage=isMediaUrl(page.data.image)&&!LEGACY.test(page.data.image)&&page.data.image!=='/images/villas/hero.jpg'?page.data.image:'/images/banners/villas-twilight.jpg';
  return <>
   <section className="vo-hero">
-   <div className="vo-hero-media df-parallax"><img src={heroImage} alt="Private pool villas set within the forest canopy" fetchPriority="high"/></div>
+   <div className="vo-hero-media df-parallax"><Img src={heroImage} alt="Private pool villas set within the forest canopy" fetchPriority="high"/></div>
    <div className="vo-hero-shade"/>
    <div className="vo-hero-content">
     <p className="eyebrow">VILLAS & OWNERSHIP <span>·</span> FOREST ECO RESORT</p>
@@ -41,7 +42,7 @@ export default function Villas({page,villas,faqs,statements}:{page:Entry;villas:
   <section className="vo-collection">
    {villas.map((v,i)=>{const features=villaFeatures(v);return <article key={v.id} id={v.slug} className={`vo-villa ${i%2?'vo-villa-flip':''}`}>
     <figure className="vo-villa-media df-reveal">
-     <div className="vo-frame"><img src={villaImage(v,i)} alt={v.title} loading={i===0?'eager':'lazy'}/></div>
+     <div className="vo-frame"><Img src={villaImage(v,i)} sizes="(max-width: 820px) 100vw, 50vw" alt={v.title} loading={i===0?'eager':'lazy'}/></div>
     </figure>
     <div className="vo-villa-copy df-reveal">
      <span className="vo-villa-n">{pad(i+1)} <i>/ {pad(villas.length)}</i></span>

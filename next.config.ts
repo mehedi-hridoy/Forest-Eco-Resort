@@ -3,6 +3,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['express', 'multer', 'exceljs'],
   images: {
+    minimumCacheTTL: 2678400,
     remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
   },
   async redirects() {
@@ -11,8 +12,8 @@ const config: NextConfig = {
   async headers() {
     return [
       { source: '/:path*', headers: [{key:'X-Content-Type-Options',value:'nosniff'},{key:'Referrer-Policy',value:'strict-origin-when-cross-origin'},{key:'X-Frame-Options',value:'DENY'}] },
-      // Let browsers reuse site images and brochures for a day, then refresh them in the background.
-      { source: '/:dir(images|brochures|logos)/:path*', headers: [{key:'Cache-Control',value:'public, max-age=86400, stale-while-revalidate=604800'}] },
+      // Let browsers reuse site images and brochures for 30 days. Give a replaced image a new file name so visitors get it at once.
+      { source: '/:dir(images|brochures|logos)/:path*', headers: [{key:'Cache-Control',value:'public, max-age=2592000, stale-while-revalidate=86400'}] },
     ];
   },
 };

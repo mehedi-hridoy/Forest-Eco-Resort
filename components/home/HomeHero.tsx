@@ -2,6 +2,7 @@
 import {Fragment,useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight,ArrowDown} from 'lucide-react';
+import Img from '@/components/Img';
 
 export type HeroSlide={id:string;image:string;video?:string;eyebrow:string;headline:string;description?:string};
 
@@ -23,7 +24,7 @@ export default function HomeHero({slides}:{slides:HeroSlide[]}){
  return <section className={`hh ${ready?'is-ready':''}`} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onTouchStart={e=>{touch.current=e.touches[0].clientX}} onTouchEnd={e=>{const d=touch.current-e.changedTouches[0].clientX;if(Math.abs(d)>40)go(d>0?1:-1)}} aria-roledescription="carousel" aria-label="Forest Eco Resort">
   <div className="hh-stage">
    {slides.map((s,i)=><div key={s.id} className={`hh-slide ${i===index?'is-active':''}`} aria-hidden={i!==index}>
-    {s.video?<video src={s.video} autoPlay muted loop playsInline poster={s.image}/>:<img src={s.image} alt="" fetchPriority={i===0?'high':'low'} loading={i===0?'eager':'lazy'}/>}
+    {s.video?<video src={s.video} autoPlay muted loop playsInline poster={s.image}/>:<Img src={s.image} alt="" fetchPriority={i===0?'high':'low'} loading={i===0?'eager':'lazy'}/>}
    </div>)}
    <div className="hh-shade"/>
    <div className="hh-grain"/>
