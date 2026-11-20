@@ -4,6 +4,12 @@ const config: NextConfig = {
   // Self-contained server bundle for the cPanel Node.js host (built locally, uploaded as one folder).
   output: 'standalone',
   serverExternalPackages: ['express', 'multer', 'exceljs'],
+  // Prisma's engine-free client loads its query compiler from a .wasm file that file tracing
+  // does not detect; ship it with every server function (Vercel) and the standalone build (cPanel).
+  outputFileTracingIncludes: {
+    '/': ['./node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/query_compiler_bg.*'],
+    '/**/*': ['./node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/query_compiler_bg.*'],
+  },
   images: {
     minimumCacheTTL: 2678400,
     remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
