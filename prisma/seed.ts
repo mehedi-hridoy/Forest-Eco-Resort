@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import {PrismaClient} from '@prisma/client';
+import {createDb} from '../server/prisma-client';
 import phases from './phases.json';
-const db=new PrismaClient();
+const db=createDb();
 const records:any[]=[...phases];
 const add=(kind:string,slug:string,title:string,data:any,sortOrder=0,status='Published')=>records.push({kind,slug,title,data,sortOrder,status});
 const nav=[['home','Home','/'],['discover','Discover Forest Eco Resort','/discover-forest'],['villas','Villas & Ownership','/villas-ownership'],['masterplan','The Masterplan','/masterplan'],['shareholder-benefits','Shareholder Benefits','/shareholder-benefits'],['facilities','Facilities','/facilities'],['gallery','Gallery','/gallery'],['journal','Journal & Updates','/journal'],['contact','Get in Touch','/get-in-touch']];

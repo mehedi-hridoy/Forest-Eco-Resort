@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {PrismaClient} from '@prisma/client';
+import {createDb} from '../server/prisma-client';
 
 // One-off: registers the bundled photos in public/images/gallery as gallery entries.
 // Only the URL, title and category are stored (a few hundred bytes per row); the image files stay in /public.
@@ -224,7 +224,7 @@ const PHOTOS=[
  }
 ];
 
-const db=new PrismaClient();
+const db=createDb();
 async function main(){
  let created=0;
  for(const [i,p] of PHOTOS.entries()){

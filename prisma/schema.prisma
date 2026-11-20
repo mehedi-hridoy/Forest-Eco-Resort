@@ -1,5 +1,8 @@
 generator client {
   provider = "prisma-client-js"
+  // No native query engine: queries are compiled in JS/Wasm and sent through the pure-JS "pg"
+  // driver (see server/db.ts). Shared cPanel/CloudLinux hosting cannot run the Rust engine reliably.
+  engineType = "client"
 }
 datasource db {
   provider = "postgresql"

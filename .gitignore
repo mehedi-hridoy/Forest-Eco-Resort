@@ -12,3 +12,4 @@ data/
 
 # Full-size source images (optimized copies live in public/images)
 originals/
+dist-cpanel/

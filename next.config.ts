@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
+  // Self-contained server bundle for the cPanel Node.js host (built locally, uploaded as one folder).
+  output: 'standalone',
   serverExternalPackages: ['express', 'multer', 'exceljs'],
   images: {
     minimumCacheTTL: 2678400,

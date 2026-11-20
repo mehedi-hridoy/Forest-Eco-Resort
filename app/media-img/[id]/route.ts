@@ -15,7 +15,8 @@ export async function GET(request:Request,{params}:{params:Promise<{id:string}>}
  const item=await db.media.findUnique({where:{id}});
  if(!item||item.status!=='Published'||!item.mimeType.startsWith('image/'))return new Response('Not found',{status:404});
  // Files kept outside the database (Blob storage, disk) are served by the regular media route.
- if(!item.storageKey.startsWith('db:'))return Response.redirect(new URL(`/api/v1/media/${id}`,request.url),302);
+ // Relative Location: behind cPanel/Passenger, request.url carries the internal bind address, not the public domain.
+ if(!item.storageKey.startsWith('db:'))return new Response(null,{status:302,headers:{Location:`/api/v1/media/${id}`}});
  const stored=await db.mediaFile.findUnique({where:{mediaId:id}});
  if(!stored)return new Response('Not found',{status:404});
  const out=await sharp(Buffer.from(stored.data)).rotate().resize({width,withoutEnlargement:true}).webp({quality:72}).toBuffer();
