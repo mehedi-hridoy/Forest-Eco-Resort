@@ -392,3 +392,8 @@ footer .brand img{height:96px}
 .footer-legal{display:flex;flex-direction:column;gap:2px}.footer-legal a{text-decoration:underline;text-underline-offset:3px}.footer-legal a:hover{opacity:1;color:var(--sage)}
 
 .popup-banner-preload{position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;top:0}
+
+/* The real consent checkbox is invisible (a styled <i> is drawn instead); keep it inside its label.
+   Without a size it inherited the global input width:100% and stretched past the viewport, adding a horizontal scrollbar. */
+.iq-consent{position:relative}
+.iq-consent input{left:0;top:3px;width:16px;height:16px;margin:0}
